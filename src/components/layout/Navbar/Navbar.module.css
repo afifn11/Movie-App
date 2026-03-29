@@ -5,13 +5,22 @@
   right: 0;
   z-index: 100;
   height: var(--navbar-height);
-  transition: background var(--transition-base), backdrop-filter var(--transition-base), box-shadow var(--transition-base);
+  /* Always have a base bg so there's no "jump" — just a gradual reveal */
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 11, 16, 0.85) 0%,
+    rgba(8, 11, 16, 0) 100%
+  );
+  transition:
+    background 350ms ease,
+    box-shadow 350ms ease;
+  will-change: background, box-shadow;
 }
 
 .header.scrolled {
-  background: rgba(8, 11, 16, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(8, 11, 16, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   box-shadow: 0 1px 0 var(--color-border);
 }
 

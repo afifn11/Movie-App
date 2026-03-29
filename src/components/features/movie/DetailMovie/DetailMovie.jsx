@@ -8,7 +8,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
   if (loading) return <PageLoader message="Loading movie details..." />;
   if (error || !movie) return <ErrorState message={error || 'Movie not found.'} />;
 
-  const posterUrl = IMG.poster(movie.poster_path);
+  const posterUrl = movie._localPoster || IMG.poster(movie.poster_path);
   const backdropUrl = IMG.backdrop(movie.backdrop_path);
   const rating = movie.vote_average?.toFixed(1);
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
