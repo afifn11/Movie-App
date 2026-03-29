@@ -1,0 +1,124 @@
+.page {
+  min-height: 90vh;
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-16);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.titleAccent { color: var(--color-accent); }
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* Input */
+.inputWrap {
+  position: relative;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-4) var(--space-12) var(--space-4) var(--space-10);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.input::placeholder { color: var(--color-text-muted); }
+
+.input:focus {
+  border-color: var(--color-accent);
+  background: var(--color-bg-elevated);
+  box-shadow: 0 0 0 3px var(--color-accent-dim);
+}
+
+/* Hide native clear button */
+.input::-webkit-search-cancel-button { display: none; }
+
+.clearBtn {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.clearBtn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+}
+
+/* Results */
+.results {
+  min-height: 200px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-16) 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.empty strong {
+  color: var(--color-text-secondary);
+}

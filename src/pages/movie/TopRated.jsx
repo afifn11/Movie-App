@@ -5,15 +5,23 @@ import { useApiMovies } from '../../hooks/useApiMovies';
 import styles from '../MovieListPage.module.css';
 
 export default function TopRatedPage() {
-  const { movies, loading, error, retry } = useApiMovies('topRated');
+  const { movies, loading, loadingMore, error, hasMore, loadMore } = useApiMovies('topRated');
 
-  if (error && !loading) return <ErrorState message={error} onRetry={retry} />;
+  if (error && !loading) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <>
       <Hero />
       <div className={`container ${styles.content}`}>
-        <MovieGrid movies={movies} title="Top Rated" loading={loading} />
+        <MovieGrid
+          movies={movies}
+          title="Top Rated"
+          loading={loading}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
+          onLoadMore={loadMore}
+          showGenreFilter
+        />
       </div>
     </>
   );

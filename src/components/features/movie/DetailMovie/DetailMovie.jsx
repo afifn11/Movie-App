@@ -2,9 +2,12 @@ import Button from '../../../ui/Button/Button';
 import Badge from '../../../ui/Badge/Badge';
 import { PageLoader, ErrorState } from '../../../ui/StateViews/StateViews';
 import { IMG } from '../../../../services/movieService';
+import { useWatchlist } from '../../../../context/WatchlistContext';
 import styles from './DetailMovie.module.css';
 
 export default function DetailMovie({ movie, trailerKey, credits, loading, error }) {
+  const { isInWatchlist, toggleWatchlist } = useWatchlist();
+
   if (loading) return <PageLoader message="Loading movie details..." />;
   if (error || !movie) return <ErrorState message={error || 'Movie not found.'} />;
 
@@ -16,6 +19,15 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
     ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`
     : '';
   const director = credits?.crew?.find((c) => c.job === 'Director')?.name;
+  const saved = isInWatchlist(movie.id);
+  const watchlistMovie = {
+    id: movie.id,
+    title: movie.title,
+    year,
+    type: movie.genres?.[0]?.name || 'Movie',
+    poster: posterUrl,
+    rating: rating || 'N/A',
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -134,6 +146,20 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
                 View on IMDB
               </Button>
             )}
+            <Button
+              variant={saved ? 'danger' : 'secondary'}
+              size="lg"
+              onClick={() => toggleWatchlist(watchlistMovie)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24"
+                fill={saved ? 'currentColor' : 'none'}
+                stroke="currentColor" strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+              {saved ? 'Remove from Watchlist' : 'Add to Watchlist'}
+            </Button>
           </div>
 
           {credits?.cast?.length > 0 && (

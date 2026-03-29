@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 const FOOTER_LINKS = [
-  { to: '/', label: 'Home' },
-  { to: '/movie/popular', label: 'Popular' },
+  { to: '/',                  label: 'Home' },
+  { to: '/movie/popular',     label: 'Popular' },
   { to: '/movie/now-playing', label: 'Now Playing' },
-  { to: '/movie/top-rated', label: 'Top Rated' },
-  { to: '/movie/create', label: 'Add Movie' },
+  { to: '/movie/top-rated',   label: 'Top Rated' },
+  { to: '/search',            label: 'Search' },
+  { to: '/watchlist',         label: 'Watchlist' },
+  { to: '/movie/create',      label: 'Add Movie' },
 ];
 
 export default function Footer() {

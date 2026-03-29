@@ -1,3 +1,25 @@
+.wrapper {
+  position: relative;
+}
+
+.watchlistBtn {
+  position: absolute !important;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 5;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.wrapper:hover .watchlistBtn {
+  opacity: 1;
+}
+
+/* Always show if saved */
+.wrapper .watchlistBtn.saved {
+  opacity: 1;
+}
+
 .card {
   display: flex;
   flex-direction: column;
@@ -5,7 +27,6 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  group: true;
 }
 
 /* ---- POSTER WRAP ---- */

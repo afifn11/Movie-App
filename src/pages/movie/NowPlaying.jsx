@@ -5,15 +5,23 @@ import { useApiMovies } from '../../hooks/useApiMovies';
 import styles from '../MovieListPage.module.css';
 
 export default function NowPlayingPage() {
-  const { movies, loading, error, retry } = useApiMovies('nowPlaying');
+  const { movies, loading, loadingMore, error, hasMore, loadMore } = useApiMovies('nowPlaying');
 
-  if (error && !loading) return <ErrorState message={error} onRetry={retry} />;
+  if (error && !loading) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <>
       <Hero />
       <div className={`container ${styles.content}`}>
-        <MovieGrid movies={movies} title="Now Playing" loading={loading} />
+        <MovieGrid
+          movies={movies}
+          title="Now Playing"
+          loading={loading}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
+          onLoadMore={loadMore}
+          showGenreFilter
+        />
       </div>
     </>
   );

@@ -31,6 +31,8 @@ export const movieService = {
   getVideos: (id) => apiFetch(buildUrl(`/movie/${id}/videos`)),
   getRecommendations: (id) => apiFetch(buildUrl(`/movie/${id}/recommendations`)),
   getCredits: (id) => apiFetch(buildUrl(`/movie/${id}/credits`)),
+  search: (query, page = 1) => apiFetch(buildUrl('/search/movie', { query, page })),
+  getGenres: () => apiFetch(buildUrl('/genre/movie/list')),
 };
 
 export const transformMovie = (movie) => ({

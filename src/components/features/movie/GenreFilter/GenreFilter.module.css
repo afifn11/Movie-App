@@ -1,0 +1,62 @@
+.wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+  position: relative;
+}
+
+/* Fade edges on scroll */
+.wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, var(--color-bg-primary), transparent);
+  pointer-events: none;
+}
+
+.scroll {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex-shrink: 0;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.chip:hover {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-muted);
+}
+
+.chipActive {
+  background: var(--color-accent-dim) !important;
+  color: var(--color-accent) !important;
+  border-color: rgba(232, 184, 75, 0.35) !important;
+  font-weight: 600;
+}
