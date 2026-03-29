@@ -1,0 +1,7 @@
+.page {
+  padding-bottom: var(--space-16);
+}
+
+.recs {
+  margin-top: var(--space-8);
+}

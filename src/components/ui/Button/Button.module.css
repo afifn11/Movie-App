@@ -1,0 +1,92 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-fast), transform var(--transition-fast),
+    box-shadow var(--transition-fast), opacity var(--transition-fast);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* ---- Variants ---- */
+.primary {
+  background: var(--color-accent);
+  color: #0a0a0a;
+}
+.primary:not(:disabled):hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(232, 184, 75, 0.3);
+}
+
+.secondary {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+.secondary:not(:disabled):hover {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+.ghost:not(:disabled):hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+  background: var(--color-bg-elevated);
+}
+
+.danger {
+  background: rgba(229, 72, 72, 0.15);
+  color: var(--color-red);
+  border: 1px solid rgba(229, 72, 72, 0.3);
+}
+.danger:not(:disabled):hover {
+  background: rgba(229, 72, 72, 0.25);
+}
+
+/* ---- Sizes ---- */
+.sm  { padding: 0.4rem 1rem;   font-size: 0.8rem; }
+.md  { padding: 0.65rem 1.5rem; font-size: 0.9rem; }
+.lg  { padding: 0.85rem 2rem;  font-size: 1rem; }
+.xl  { padding: 1rem 2.5rem;   font-size: 1.05rem; }
+
+/* ---- Loading ---- */
+.loading { cursor: wait; }
+
+.spinner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hiddenText { opacity: 0; }

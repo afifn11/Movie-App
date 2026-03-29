@@ -1,0 +1,63 @@
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-elevated) 25%,
+    var(--color-bg-card) 50%,
+    var(--color-bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Card skeleton */
+.cardSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.posterSkeleton {
+  aspect-ratio: 2/3;
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.contentSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-1);
+}
+
+.titleSkeleton {
+  height: 18px;
+  width: 80%;
+}
+
+.metaSkeleton {
+  height: 14px;
+  width: 50%;
+}
+
+/* Hero skeleton */
+.heroSkeleton {
+  width: 100%;
+  min-height: 80vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  height: 100%;
+}

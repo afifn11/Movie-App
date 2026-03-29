@@ -1,30 +1,40 @@
-import { createContext, useState } from 'react';
-import data from '../utils/constants/data';
+import { createContext, useContext, useState } from 'react';
+import { LOCAL_MOVIES } from '../utils/constants/data';
 
-// 1. Buat context-nya
-const MoviesContext = createContext();
+const MoviesContext = createContext(null);
 
-// 2. Buat provider-nya
-function MoviesProvider({ children }) {
-  const [localMovies, setLocalMovies] = useState(data);
-  const [apiMovies, setApiMovies] = useState({
+export function MoviesProvider({ children }) {
+  const [localMovies, setLocalMovies] = useState(LOCAL_MOVIES);
+  const [apiCache, setApiCache] = useState({
     popular: [],
     nowPlaying: [],
-    topRated: []
+    topRated: [],
   });
 
+  const addMovie = (movie) => {
+    setLocalMovies((prev) => [movie, ...prev]);
+  };
+
+  const updateCache = (key, movies) => {
+    setApiCache((prev) => ({ ...prev, [key]: movies }));
+  };
+
   return (
-    <MoviesContext.Provider value={{ 
-      localMovies, 
-      setLocalMovies,
-      apiMovies,
-      setApiMovies
+    <MoviesContext.Provider value={{
+      localMovies,
+      addMovie,
+      apiCache,
+      updateCache,
     }}>
       {children}
     </MoviesContext.Provider>
   );
 }
 
-// 3. Ekspor keduanya
-export { MoviesContext, MoviesProvider };
+export const useMovies = () => {
+  const ctx = useContext(MoviesContext);
+  if (!ctx) throw new Error('useMovies must be used within MoviesProvider');
+  return ctx;
+};
+
 export default MoviesContext;

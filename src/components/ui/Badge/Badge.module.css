@@ -1,0 +1,48 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.default {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.accent {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+  border: 1px solid rgba(232, 184, 75, 0.2);
+}
+
+.rating {
+  background: rgba(232, 184, 75, 0.12);
+  color: var(--color-accent);
+  border: 1px solid rgba(232, 184, 75, 0.2);
+  gap: 0.25rem;
+}
+
+.new {
+  background: rgba(76, 175, 130, 0.12);
+  color: var(--color-green);
+  border: 1px solid rgba(76, 175, 130, 0.2);
+}
+
+.genre {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}

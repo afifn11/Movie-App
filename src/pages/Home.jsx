@@ -1,17 +1,20 @@
-import { useContext } from "react";
-import Hero from "../components/Hero/Hero";
-import Movies from "../components/Movies/Movies";
-import MoviesContext from "../context/MoviesContext";
+import Hero from '../components/features/movie/Hero/Hero';
+import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
+import { useMovies } from '../context/MoviesContext';
+import styles from './Home.module.css';
 
-function Home() {
-  const { localMovies } = useContext(MoviesContext);
+export default function Home() {
+  const { localMovies } = useMovies();
 
   return (
     <>
       <Hero />
-      <Movies movies={localMovies} title="Latest Movies" />
+      <div className={`container ${styles.content}`}>
+        <MovieGrid
+          movies={localMovies}
+          title="My Collection"
+        />
+      </div>
     </>
   );
 }
-
-export default Home;
