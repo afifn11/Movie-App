@@ -4,7 +4,6 @@ import { MoviesProvider } from './context/MoviesContext';
 import { WatchlistProvider } from './context/WatchlistContext';
 
 import Home from './pages/Home';
-import Create from './pages/Create';
 import Detail from './pages/Detail';
 import Search from './pages/Search';
 import Watchlist from './pages/Watchlist';
@@ -22,7 +21,6 @@ export default function App() {
             <Route path="/"                  element={<Home />} />
             <Route path="/search"            element={<Search />} />
             <Route path="/watchlist"         element={<Watchlist />} />
-            <Route path="/movie/create"      element={<Create />} />
             <Route path="/movie/popular"     element={<Popular />} />
             <Route path="/movie/now-playing" element={<NowPlaying />} />
             <Route path="/movie/top-rated"   element={<TopRated />} />

@@ -1,18 +1,20 @@
 import Hero from '../components/features/movie/Hero/Hero';
 import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
-import { useMovies } from '../context/MoviesContext';
+import { useApiMovies } from '../hooks/useApiMovies';
 import styles from './Home.module.css';
 
 export default function Home() {
-  const { localMovies } = useMovies();
+  const { movies, loading } = useApiMovies('popular');
 
   return (
     <>
       <Hero />
       <div className={`container ${styles.content}`}>
         <MovieGrid
-          movies={localMovies}
-          title="My Collection"
+          movies={movies}
+          title="Popular Right Now"
+          loading={loading}
+          showGenreFilter
         />
       </div>
     </>

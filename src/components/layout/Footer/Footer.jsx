@@ -8,7 +8,6 @@ const FOOTER_LINKS = [
   { to: '/movie/top-rated',   label: 'Top Rated' },
   { to: '/search',            label: 'Search' },
   { to: '/watchlist',         label: 'Watchlist' },
-  { to: '/movie/create',      label: 'Add Movie' },
 ];
 
 export default function Footer() {
@@ -16,25 +15,15 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
         <div className={styles.brand}>
-          <span className={styles.logo}>
-            CINE<span>MA</span>
-          </span>
-          <p className={styles.tagline}>
-            Your personal movie discovery experience
-          </p>
+          <span className={styles.logo}>CINE<span>MA</span></span>
+          <p className={styles.tagline}>Your personal movie discovery experience</p>
         </div>
-
         <nav className={styles.links} aria-label="Footer navigation">
           {FOOTER_LINKS.map(({ to, label }) => (
-            <Link key={to} to={to} className={styles.link}>
-              {label}
-            </Link>
+            <Link key={to} to={to} className={styles.link}>{label}</Link>
           ))}
         </nav>
-
-        <p className={styles.copy}>
-          © {new Date().getFullYear()} Cinema. Powered by TMDB.
-        </p>
+        <p className={styles.copy}>© {new Date().getFullYear()} Cinema. Powered by TMDB.</p>
       </div>
     </footer>
   );

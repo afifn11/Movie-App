@@ -66,12 +66,7 @@ export default function Navbar() {
           {/* Actions */}
           <div className={styles.actions}>
             {/* Search */}
-            <Link
-              to="/search"
-              className={styles.iconBtn}
-              aria-label="Search"
-              title="Search movies"
-            >
+            <Link to="/search" className={styles.iconBtn} aria-label="Search" title="Search movies">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
                 <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -79,26 +74,15 @@ export default function Navbar() {
             </Link>
 
             {/* Watchlist */}
-            <Link
-              to="/watchlist"
-              className={styles.iconBtn}
-              aria-label="Watchlist"
-              title="My watchlist"
-            >
+            <Link to="/watchlist" className={styles.iconBtn} aria-label="Watchlist" title="My watchlist">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               {watchlist.length > 0 && (
-                <span className={styles.badge}>{watchlist.length > 99 ? '99+' : watchlist.length}</span>
+                <span className={styles.badge}>
+                  {watchlist.length > 99 ? '99+' : watchlist.length}
+                </span>
               )}
-            </Link>
-
-            {/* Add Movie CTA */}
-            <Link to="/movie/create" className={styles.addBtn}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-              </svg>
-              <span>Add Movie</span>
             </Link>
 
             {/* Hamburger */}
@@ -169,13 +153,6 @@ export default function Navbar() {
               <span className={styles.mobileBadge}>{watchlist.length}</span>
             )}
           </NavLink>
-
-          <Link to="/movie/create" className={styles.mobileAddBtn}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-            </svg>
-            Add Movie
-          </Link>
         </div>
       </nav>
     </>
