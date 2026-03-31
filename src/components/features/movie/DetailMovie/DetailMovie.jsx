@@ -2,11 +2,17 @@ import Button from '../../../ui/Button/Button';
 import Badge from '../../../ui/Badge/Badge';
 import { PageLoader, ErrorState } from '../../../ui/StateViews/StateViews';
 import { IMG } from '../../../../services/movieService';
-import { useWatchlist } from '../../../../context/WatchlistContext';
+import { useWatchlistDB } from '../../../../hooks/useWatchlistDB';
+import { useWatchHistory } from '../../../../hooks/useWatchHistory';
+import { useAuth } from '../../../../context/AuthContext';
+import ReviewSection from '../../review/ReviewSection';
+import AIChatPanel from '../../ai/AIChatPanel';
 import styles from './DetailMovie.module.css';
 
-export default function DetailMovie({ movie, trailerKey, credits, loading, error }) {
-  const { isInWatchlist, toggleWatchlist } = useWatchlist();
+export default function DetailMovie({ movie, trailerKey, credits, loading, error, onLoginRequired }) {
+  const { isAuthenticated } = useAuth();
+  const { isInWatchlist, toggleWatchlist } = useWatchlistDB();
+  const { markAsWatched, hasWatched } = useWatchHistory();
 
   if (loading) return <PageLoader message="Loading movie details..." />;
   if (error || !movie) return <ErrorState message={error || 'Movie not found.'} />;
@@ -15,18 +21,20 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
   const backdropUrl = IMG.backdrop(movie.backdrop_path);
   const rating = movie.vote_average?.toFixed(1);
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
-  const runtime = movie.runtime
-    ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`
-    : '';
+  const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : '';
   const director = credits?.crew?.find((c) => c.job === 'Director')?.name;
   const saved = isInWatchlist(movie.id);
+  const watched = hasWatched(movie.id);
+
   const watchlistMovie = {
-    id: movie.id,
-    title: movie.title,
-    year,
+    id: movie.id, title: movie.title, year,
     type: movie.genres?.[0]?.name || 'Movie',
-    poster: posterUrl,
-    rating: rating || 'N/A',
+    poster: posterUrl, rating: rating || 'N/A',
+  };
+
+  const handleAuthAction = async (action) => {
+    if (!isAuthenticated) { onLoginRequired?.(); return; }
+    await action();
   };
 
   return (
@@ -63,9 +71,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
         <div className={styles.infoCol}>
           <div className={styles.titleRow}>
             <h1 className={styles.title}>{movie.title}</h1>
-            {movie.tagline && (
-              <p className={styles.tagline}>"{movie.tagline}"</p>
-            )}
+            {movie.tagline && <p className={styles.tagline}>"{movie.tagline}"</p>}
           </div>
 
           <div className={styles.metaRow}>
@@ -76,13 +82,12 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
                 {movie.status}
               </span>
             )}
+            {watched && <span className={`${styles.metaChip} ${styles.metaWatched}`}>✓ Watched</span>}
           </div>
 
           {movie.genres?.length > 0 && (
             <div className={styles.genres}>
-              {movie.genres.map((g) => (
-                <Badge key={g.id} variant="genre">{g.name}</Badge>
-              ))}
+              {movie.genres.map((g) => <Badge key={g.id} variant="genre">{g.name}</Badge>)}
             </div>
           )}
 
@@ -118,50 +123,48 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
             )}
           </div>
 
+          {/* Actions */}
           <div className={styles.actions}>
             {trailerKey && (
-              <Button
-                as="a"
-                href={`https://www.youtube.com/watch?v=${trailerKey}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="primary"
-                size="lg"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M5 3L19 12L5 21V3Z"/>
-                </svg>
+              <Button as="a" href={`https://www.youtube.com/watch?v=${trailerKey}`}
+                target="_blank" rel="noopener noreferrer" variant="primary" size="lg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3L19 12L5 21V3Z"/></svg>
                 Watch Trailer
               </Button>
             )}
-            {movie.imdb_id && (
-              <Button
-                as="a"
-                href={`https://www.imdb.com/title/${movie.imdb_id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="ghost"
-                size="lg"
-              >
-                View on IMDB
-              </Button>
-            )}
             <Button
-              variant={saved ? 'danger' : 'secondary'}
-              size="lg"
-              onClick={() => toggleWatchlist(watchlistMovie)}
+              variant={saved ? 'danger' : 'secondary'} size="lg"
+              onClick={() => handleAuthAction(() => toggleWatchlist(watchlistMovie))}
             >
               <svg width="16" height="16" viewBox="0 0 24 24"
                 fill={saved ? 'currentColor' : 'none'}
-                stroke="currentColor" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round"
-              >
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
               </svg>
-              {saved ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              {saved ? 'In Watchlist' : 'Add to Watchlist'}
             </Button>
+            <Button
+              variant={watched ? 'secondary' : 'ghost'} size="lg"
+              onClick={() => handleAuthAction(() => markAsWatched(watchlistMovie))}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="currentColor" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+              </svg>
+              {watched ? 'Watched' : 'Mark as Watched'}
+            </Button>
+            {movie.imdb_id && (
+              <Button as="a" href={`https://www.imdb.com/title/${movie.imdb_id}`}
+                target="_blank" rel="noopener noreferrer" variant="ghost" size="lg">
+                IMDB
+              </Button>
+            )}
           </div>
 
+          {/* AI Chat */}
+          <AIChatPanel movie={{ ...movie, director }} />
+
+          {/* Cast */}
           {credits?.cast?.length > 0 && (
             <div className={styles.block}>
               <h3 className={styles.blockLabel}>Top Cast</h3>
@@ -170,15 +173,9 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
                   <div key={actor.id} className={styles.castMember}>
                     <div className={styles.castAvatar}>
                       {actor.profile_path ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
-                          alt={actor.name}
-                          loading="lazy"
-                        />
+                        <img src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`} alt={actor.name} loading="lazy" />
                       ) : (
-                        <span className={styles.castAvatarFallback}>
-                          {actor.name[0]}
-                        </span>
+                        <span className={styles.castAvatarFallback}>{actor.name[0]}</span>
                       )}
                     </div>
                     <span className={styles.castName}>{actor.name}</span>
@@ -188,6 +185,9 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
               </div>
             </div>
           )}
+
+          {/* Reviews */}
+          <ReviewSection movie={movie} />
         </div>
       </div>
     </div>

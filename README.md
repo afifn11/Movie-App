@@ -1,10 +1,11 @@
-# 🎬 Cinema
+# 🎬 Cinema App v2
 
-> A modern movie discovery web app powered by [TMDB API](https://www.themoviedb.org/)
+> A production-grade movie discovery app with AI-powered features, built with React + Vite + Supabase + Google Gemini.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite)
-![CSS Modules](https://img.shields.io/badge/CSS-Modules-000?style=flat-square&logo=cssmodules)
+![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=flat-square&logo=supabase)
+![Gemini](https://img.shields.io/badge/Google-Gemini_AI-4285F4?style=flat-square&logo=google)
 ![Deploy](https://img.shields.io/badge/Deployed-Vercel-000?style=flat-square&logo=vercel)
 
 **Live Demo →** [netfif-cinema.vercel.app](https://netfif-cinema.vercel.app)
@@ -13,39 +14,71 @@
 
 ## ✨ Features
 
-- 🔥 **Trending Hero** — auto-fetches today's trending movie with cinematic backdrop
-- 🎞 **Movie Categories** — Popular, Now Playing, Top Rated from TMDB
-- 🔍 **Movie Detail** — full info including cast, director, genres, ratings & trailer
-- ➕ **Add Movie** — add to your personal local collection with live poster preview
-- 💀 **Skeleton Loading** — shimmer loading states across all pages
-- 📱 **Mobile First** — fully responsive with animated hamburger drawer
-- 🌑 **Dark Cinema UI** — premium dark theme with gold accent
+### 🎥 Discovery
+- **Cinematic Hero** — auto-fetching trending movie with full-bleed backdrop
+- **Popular, Now Playing, Top Rated** — TMDB-powered movie lists
+- **Search** — debounced real-time search with load more pagination
+- **Genre Filter** — filter movies by genre across all pages
+
+### 👤 User (Auth required)
+- **Google Sign-In** — one-click authentication via Supabase OAuth
+- **Watchlist** — save movies, synced across devices via database
+- **Watch History** — log films you've watched
+- **Ratings & Reviews** — rate out of 10 + write detailed reviews
+- **Custom Lists** — create named collections, make them public or private
+
+### 🤖 AI (Google Gemini)
+- **AI Chat per Film** — ask anything about any movie contextually
+- **Smart Review Assistant** — AI writing tips to enhance your reviews
+- **Hyper-Personal Recommendations** — based on your actual ratings & watch history
+- **Mood-Based Discovery** — describe how you feel, get perfect film picks
 
 ---
 
-## 🖥 Preview
-
-| Home | Detail | Add Movie |
-|------|--------|-----------|
-| Hero + movie grid | Cast, genres, trailer | Form with poster preview |
-
----
-
-## 🏗 Project Structure
+## 🏗 Architecture
 
 ```
 src/
+├── lib/                    # External service clients
+│   ├── supabase.js         # Supabase client
+│   └── gemini.js           # Gemini AI functions
+├── context/                # React contexts
+│   ├── AuthContext.jsx     # Google OAuth + session
+│   └── MoviesContext.jsx   # API cache
+├── hooks/                  # Custom hooks
+│   ├── useApiMovies.js     # Paginated TMDB lists
+│   ├── useMovieDetail.js   # Single movie + credits
+│   ├── useSearch.js        # Debounced search
+│   ├── useWatchlistDB.js   # Supabase watchlist
+│   ├── useReviews.js       # Rating & reviews
+│   ├── useMovieLists.js    # Custom lists
+│   └── useWatchHistory.js  # Watch history
 ├── components/
-│   ├── layout/           # Navbar, Footer, AppLayout
-│   ├── ui/               # Button, Badge, Skeleton, StateViews
-│   └── features/movie/   # Hero, MovieCard, MovieGrid, DetailMovie, AddMovieForm
-├── context/              # MoviesContext + useMovies hook
-├── hooks/                # useApiMovies, useMovieDetail
-├── pages/                # Home, Detail, Create, NotFound
-│   └── movie/            # Popular, NowPlaying, TopRated
-├── services/             # movieService.js — centralized API layer
-├── styles/               # globals.css — design tokens & base styles
-└── utils/constants/      # data.js — local movie seed data
+│   ├── layout/             # Navbar, Footer, AppLayout, ScrollToTop
+│   ├── ui/                 # Button, Badge, Modal, Skeleton, StateViews
+│   └── features/
+│       ├── auth/           # LoginModal, UserMenu
+│       ├── movie/          # Hero, MovieCard, MovieGrid, DetailMovie, etc.
+│       ├── review/         # ReviewSection
+│       └── ai/             # AIChatPanel, MoodPicker, AIRecommendations
+├── pages/                  # Route-level components
+│   ├── Home, Search, Watchlist, Profile, Lists, ListDetail
+│   └── movie/              # Popular, NowPlaying, TopRated
+└── services/
+    └── movieService.js     # Centralized TMDB API layer
+```
+
+---
+
+## 🗄 Database Schema (Supabase)
+
+```sql
+profiles        -- user profile (synced from Google OAuth)
+watchlist       -- saved movies per user
+reviews         -- ratings + text reviews per movie
+movie_lists     -- custom named collections
+list_items      -- movies inside each list
+watch_history   -- log of watched films
 ```
 
 ---
@@ -53,7 +86,6 @@ src/
 ## 🚀 Getting Started
 
 ### 1. Clone & Install
-
 ```bash
 git clone https://github.com/afifn11/cinema-app.git
 cd cinema-app
@@ -61,39 +93,38 @@ npm install
 ```
 
 ### 2. Setup Environment
-
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your TMDB API key:
-
+Fill in `.env`:
 ```env
-VITE_API_KEY=your_tmdb_api_key_here
+VITE_API_KEY=            # TMDB API key
+VITE_SUPABASE_URL=       # Supabase project URL
+VITE_SUPABASE_ANON_KEY=  # Supabase anon key
+VITE_GEMINI_API_KEY=     # Google Gemini API key
 ```
 
-> Get a free API key at [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
+### 3. Setup Supabase Database
+- Go to Supabase Dashboard → SQL Editor
+- Copy and run the contents of `supabase/schema.sql`
+- Enable Google OAuth: Authentication → Providers → Google
 
-### 3. Run
-
+### 4. Run
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173)
-
 ---
 
-## 🛠 Tech Stack
+## 🔑 Getting API Keys
 
-| Tech | Purpose |
-|------|---------|
-| React 19 | UI framework |
-| React Router v7 | Client-side routing |
-| Vite 6 | Build tool & dev server |
-| CSS Modules | Scoped component styles |
-| TMDB API | Movie data source |
-| Vercel | Deployment & hosting |
+| Service | URL | Free Tier |
+|---------|-----|-----------|
+| TMDB | [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) | ✅ Free |
+| Supabase | [supabase.com](https://supabase.com) | ✅ Free (2 projects) |
+| Google Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | ✅ Free tier |
+| Google OAuth | [console.cloud.google.com](https://console.cloud.google.com) | ✅ Free |
 
 ---
 
@@ -104,23 +135,15 @@ Open [http://localhost:5173](http://localhost:5173)
 | Background | `#080b10` |
 | Surface | `#0d1117` / `#111720` |
 | Accent | `#e8b84b` — gold |
-| Text Primary | `#f0f2f5` |
-| Text Secondary | `#8a9ab5` |
 | Font Display | Bebas Neue |
 | Font Body | DM Sans |
 
 ---
 
-## 📦 Scripts
+## 📦 Tech Stack
 
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run preview  # Preview production build
-```
+React 19 · React Router v7 · Vite 6 · Supabase · Google Gemini · CSS Modules · TMDB API · Vercel
 
 ---
 
-## 📄 License
-
-MIT © [afifn11](https://github.com/afifn11)
+© 2025 Cinema App · [afifn11](https://github.com/afifn11)

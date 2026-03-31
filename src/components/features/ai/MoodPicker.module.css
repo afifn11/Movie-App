@@ -1,0 +1,257 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+
+.header { display: flex; flex-direction: column; gap: var(--space-1); }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.accent { color: var(--color-accent); }
+
+.subtitle { font-size: 0.875rem; color: var(--color-text-muted); }
+
+/* Presets */
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.preset {
+  padding: 0.45rem 1rem;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.preset:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-muted);
+}
+
+.presetActive {
+  background: var(--color-accent-dim) !important;
+  color: var(--color-accent) !important;
+  border-color: rgba(232,184,75,0.35) !important;
+  font-weight: 600;
+}
+
+/* Custom input */
+.customInput {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.customInput:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-dim);
+}
+
+.customInput::placeholder { color: var(--color-text-muted); }
+
+/* Time */
+.timeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.timeLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.timeOptions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+.timeChip {
+  padding: 0.3rem 0.85rem;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.timeChip:hover { color: var(--color-text-primary); }
+
+.timeChipActive {
+  background: var(--color-accent-dim) !important;
+  color: var(--color-accent) !important;
+  border-color: rgba(232,184,75,0.3) !important;
+  font-weight: 600;
+}
+
+/* Find button */
+.findBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-accent);
+  color: #0a0a0a;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  align-self: flex-start;
+}
+
+.findBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(232,184,75,0.3);
+}
+
+.findBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: #0a0a0a;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error {
+  font-size: 0.85rem;
+  color: var(--color-red);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(229,72,72,0.08);
+  border: 1px solid rgba(229,72,72,0.2);
+  border-radius: var(--radius-md);
+}
+
+/* Results */
+.results { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.resultsLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.resultsList { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.resultCard {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast);
+}
+
+.resultCard:hover { border-color: var(--color-border-hover); }
+
+.resultPoster {
+  width: 60px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.resultPosterFallback {
+  width: 60px;
+  height: 90px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.resultInfo { flex: 1; display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+
+.resultTop { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+
+.resultTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.resultYear {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.resultVibe {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(232,184,75,0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-self: flex-start;
+}
+
+.resultReason {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.resultLink {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  align-self: flex-start;
+  transition: opacity var(--transition-fast);
+}
+
+.resultLink:hover { opacity: 0.75; }
