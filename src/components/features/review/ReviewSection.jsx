@@ -64,7 +64,7 @@ function ReviewCard({ review }) {
   );
 }
 
-export default function ReviewSection({ movie }) {
+export default function ReviewSection({ movie, posterUrl }) {
   const { user, isAuthenticated } = useAuth();
   const { reviews, userReview, loading, submitReview, deleteReview, avgRating } = useMovieReviews(movie?.id);
   const [rating, setRating]     = useState(userReview?.rating || 0);
@@ -83,7 +83,7 @@ export default function ReviewSection({ movie }) {
         rating,
         content,
         movieTitle: movie.title,
-        posterUrl: movie._localPoster || null,
+        posterUrl: posterUrl || movie._localPoster || null,
       });
       setShowForm(false);
     } catch (err) {
@@ -147,8 +147,8 @@ export default function ReviewSection({ movie }) {
             rows={4}
           />
 
-          {/* AI hint button */}
-          {content.trim().length > 20 && rating > 0 && (
+          {/* AI hint button — tampil sejak awal, cukup syaratkan rating */}
+          {rating > 0 && (
             <button type="button" className={styles.aiHintBtn} onClick={handleAiHint} disabled={loadingHint}>
               {loadingHint ? (
                 <span className={styles.smallSpinner} />

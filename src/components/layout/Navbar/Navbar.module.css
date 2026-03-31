@@ -354,3 +354,9 @@
 }
 
 .mobileSignIn:hover { background: var(--color-accent-hover); }
+
+.mobileDrawerDivider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-2) 0;
+}

@@ -187,7 +187,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
           )}
 
           {/* Reviews */}
-          <ReviewSection movie={movie} />
+          <ReviewSection movie={movie} posterUrl={posterUrl} />
         </div>
       </div>
     </div>

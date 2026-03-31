@@ -117,18 +117,12 @@ export default function Navbar() {
             Watchlist
             {watchlist.length > 0 && <span className={styles.mobileBadge}>{watchlist.length}</span>}
           </NavLink>
-          {isAuthenticated ? (
-            <>
-              <NavLink to="/profile" className={({ isActive }) => `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/></svg>
-                Profile
-              </NavLink>
-              <NavLink to="/lists" className={({ isActive }) => `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-                My Lists
-              </NavLink>
-            </>
-          ) : (
+
+          {/* Divider */}
+          <div className={styles.mobileDrawerDivider} />
+
+          {/* Auth — sign in only. Profile/Lists/SignOut ada di avatar dropdown */}
+          {!isAuthenticated && (
             <button className={styles.mobileSignIn} onClick={() => { setMenuOpen(false); setLoginOpen(true); }}>
               Sign In with Google
             </button>
