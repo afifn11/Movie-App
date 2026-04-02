@@ -19,11 +19,27 @@ export default function AIRecommendations({ watchlist, reviews, watchHistory }) 
       const raw = await getPersonalRecommendations({ watchlist, reviews, watchHistory });
       if (!raw) { setFetched(true); setLoading(false); return; }
 
+      // Enrich with TMDB search — multiple fallback strategies
       const enriched = await Promise.all(
         raw.map(async (rec) => {
           try {
-            const data = await movieService.search(rec.searchQuery, 1);
-            const match = data.results[0];
+            // Strategy 1: searchQuery from Gemini
+            let match = null;
+            const data1 = await movieService.search(rec.searchQuery, 1);
+            match = data1.results[0];
+
+            // Strategy 2: title + year
+            if (!match?.poster_path && rec.title) {
+              const data2 = await movieService.search(`${rec.title} ${rec.year}`, 1);
+              match = data2.results[0] || match;
+            }
+
+            // Strategy 3: title only
+            if (!match?.poster_path && rec.title) {
+              const data3 = await movieService.search(rec.title, 1);
+              match = data3.results[0] || match;
+            }
+
             return {
               ...rec,
               tmdbId: match?.id || null,
@@ -32,7 +48,9 @@ export default function AIRecommendations({ watchlist, reviews, watchHistory }) 
                 : null,
               tmdbRating: match?.vote_average?.toFixed(1) || null,
             };
-          } catch { return { ...rec, tmdbId: null, poster: null }; }
+          } catch {
+            return { ...rec, tmdbId: null, poster: null };
+          }
         })
       );
       setRecs(enriched);

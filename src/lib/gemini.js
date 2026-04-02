@@ -60,13 +60,14 @@ Analyze their taste deeply — look for patterns in themes, tone, directors, cin
 Return ONLY a valid JSON array (no markdown, no explanation) with exactly 6 recommendations:
 [
   {
-    "title": "Film Title",
+    "title": "Exact Film Title as known internationally",
     "year": 2023,
     "reason": "2-3 sentence explanation of why this specifically matches their taste",
-    "searchQuery": "film title year"
+    "searchQuery": "exact film title"
   }
 ]
 
+IMPORTANT: "searchQuery" must be the exact English title of the film as it appears on TMDB.
 Recommend films they likely haven't seen. Avoid obvious mainstream blockbusters unless truly fitting.
 `;
   const result = await model.generateContent(prompt);
@@ -114,14 +115,16 @@ Think creatively — consider the emotional journey the user needs right now.
 Return ONLY a valid JSON array (no markdown, no explanation):
 [
   {
-    "title": "Film Title",
+    "title": "Exact Film Title in English",
     "year": 2020,
     "runtime": "2h 15m",
     "mood_match": "One sentence on why this fits the mood perfectly",
     "vibe": "One evocative word or short phrase describing the film's atmosphere",
-    "searchQuery": "film title"
+    "searchQuery": "exact english film title"
   }
 ]
+
+IMPORTANT: "searchQuery" must be the exact English title of the film as it appears on TMDB.
 `;
   const result = await model.generateContent(prompt);
   const text = result.response.text().trim();
