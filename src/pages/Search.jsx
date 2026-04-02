@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
-import { useSearch } from "../hooks/useSearch";
-import MovieGrid from "../components/features/movie/MovieGrid/MovieGrid";
-import { PageLoader } from "../components/ui/StateViews/StateViews";
+import { useSearch } from '../hooks/useSearch';
+import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
+import { PageLoader } from '../components/ui/StateViews/StateViews';
 import styles from './Search.module.css';
 
 export default function SearchPage() {

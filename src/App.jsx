@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Detail from './pages/Detail';
 import Search from './pages/Search';
+import Discover from './pages/Discover';
 import Watchlist from './pages/Watchlist';
 import Profile from './pages/Profile';
 import Lists from './pages/Lists';
@@ -23,6 +24,7 @@ export default function App() {
           <Routes>
             <Route path="/"                  element={<Home />} />
             <Route path="/search"            element={<Search />} />
+            <Route path="/discover"          element={<Discover />} />
             <Route path="/watchlist"         element={<Watchlist />} />
             <Route path="/profile"           element={<Profile />} />
             <Route path="/lists"             element={<Lists />} />

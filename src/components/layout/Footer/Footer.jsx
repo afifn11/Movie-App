@@ -6,6 +6,7 @@ const FOOTER_LINKS = [
   { to: '/movie/popular',     label: 'Popular' },
   { to: '/movie/now-playing', label: 'Now Playing' },
   { to: '/movie/top-rated',   label: 'Top Rated' },
+  { to: '/discover',          label: 'Discover' },
   { to: '/search',            label: 'Search' },
   { to: '/watchlist',         label: 'Watchlist' },
 ];
