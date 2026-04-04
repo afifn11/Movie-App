@@ -14,9 +14,36 @@
 .publicBadge { font-size: 0.68rem; font-weight: 600; color: var(--color-green); background: rgba(76,175,130,0.1); border: 1px solid rgba(76,175,130,0.2); padding: 0.15rem 0.5rem; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.06em; }
 .listDesc { font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .listMeta { font-size: 0.75rem; color: var(--color-text-muted); }
-.deleteBtn { position: absolute; top: var(--space-3); right: var(--space-3); display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-md); background: transparent; border: 1px solid transparent; color: var(--color-text-muted); cursor: pointer; transition: all var(--transition-fast); opacity: 0; }
-.card:hover .deleteBtn { opacity: 1; }
-.deleteBtn:hover { color: var(--color-red); background: rgba(229,72,72,0.1); border-color: rgba(229,72,72,0.2); }
+.deleteBtn {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  /* Mobile: always visible */
+  opacity: 1;
+}
+
+/* Desktop: hide until hover */
+@media (hover: hover) {
+  .deleteBtn { opacity: 0; }
+  .card:hover .deleteBtn { opacity: 1; }
+}
+
+.deleteBtn:hover {
+  color: var(--color-red);
+  background: rgba(229,72,72,0.1);
+  border-color: rgba(229,72,72,0.2);
+}
 .form { display: flex; flex-direction: column; gap: var(--space-4); }
 .field { display: flex; flex-direction: column; gap: var(--space-2); }
 .label { font-size: 0.82rem; font-weight: 600; color: var(--color-text-secondary); }

@@ -7,17 +7,15 @@
   top: var(--space-3);
   left: var(--space-3);
   z-index: 5;
-  opacity: 0;
+  /* Mobile: always visible */
+  opacity: 1;
   transition: opacity var(--transition-fast);
 }
 
-.wrapper:hover .watchlistBtn {
-  opacity: 1;
-}
-
-/* Always show if saved */
-.wrapper .watchlistBtn.saved {
-  opacity: 1;
+/* Desktop: hide until hover */
+@media (hover: hover) {
+  .watchlistBtn { opacity: 0; }
+  .wrapper:hover .watchlistBtn { opacity: 1; }
 }
 
 .card {
