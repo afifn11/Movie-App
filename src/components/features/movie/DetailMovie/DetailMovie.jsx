@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import Button from '../../../ui/Button/Button';
 import Badge from '../../../ui/Badge/Badge';
 import { PageLoader, ErrorState } from '../../../ui/StateViews/StateViews';
 import { IMG } from '../../../../services/movieService';
 import { useWatchlistDB } from '../../../../hooks/useWatchlistDB';
 import { useWatchHistory } from '../../../../hooks/useWatchHistory';
+import AddToListModal from '../../lists/AddToListModal';
 import { useAuth } from '../../../../context/AuthContext';
 import ReviewSection from '../../review/ReviewSection';
 import AIChatPanel from '../../ai/AIChatPanel';
@@ -11,6 +13,7 @@ import styles from './DetailMovie.module.css';
 
 export default function DetailMovie({ movie, trailerKey, credits, loading, error, onLoginRequired }) {
   const { isAuthenticated } = useAuth();
+  const [listModalOpen, setListModalOpen] = useState(false);
   const { isInWatchlist, toggleWatchlist } = useWatchlistDB();
   const { markAsWatched, hasWatched } = useWatchHistory();
 
@@ -153,6 +156,17 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
               </svg>
               {watched ? 'Watched' : 'Mark as Watched'}
             </Button>
+            {isAuthenticated && (
+              <Button
+                variant="ghost" size="lg"
+                onClick={() => setListModalOpen(true)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                Add to List
+              </Button>
+            )}
             {movie.imdb_id && (
               <Button as="a" href={`https://www.imdb.com/title/${movie.imdb_id}`}
                 target="_blank" rel="noopener noreferrer" variant="ghost" size="lg">
@@ -190,6 +204,12 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
           <ReviewSection movie={movie} posterUrl={posterUrl} />
         </div>
       </div>
+      {/* Add to List Modal */}
+      <AddToListModal
+        isOpen={listModalOpen}
+        onClose={() => setListModalOpen(false)}
+        movie={watchlistMovie}
+      />
     </div>
   );
 }
