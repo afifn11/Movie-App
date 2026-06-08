@@ -46,23 +46,23 @@ export default function MoodPicker({ watchHistory = [] }) {
         watchedTitles,
       });
 
-      // Enrich with TMDB poster — multiple fallback strategies
+      // Sinkronisasi dengan poster gambar data TMDB
       const enriched = await Promise.all(
         recs.map(async (rec) => {
           try {
             let match = null;
 
-            // Strategy 1: searchQuery from Gemini
+            // Strategi fallback 1: Menggunakan searchQuery dari Gemini
             const data1 = await movieService.search(rec.searchQuery, 1);
             match = data1.results[0];
 
-            // Strategy 2: title + year
+            // Strategi fallback 2: Kombinasi judul + tahun rilis
             if (!match?.poster_path && rec.title) {
               const data2 = await movieService.search(`${rec.title} ${rec.year}`, 1);
               match = data2.results[0] || match;
             }
 
-            // Strategy 3: title only
+            // Strategi fallback 3: Menggunakan pencarian judul film saja
             if (!match?.poster_path && rec.title) {
               const data3 = await movieService.search(rec.title, 1);
               match = data3.results[0] || match;
@@ -116,9 +116,10 @@ export default function MoodPicker({ watchHistory = [] }) {
       <div className={styles.customRow}>
         <input
           type="text"
+          maxLength={100}
           value={customMood}
           onChange={(e) => { setCustomMood(e.target.value); setMood(''); }}
-          placeholder="Or describe your mood in your own words..."
+          placeholder="Or describe your mood in your own words... (max 100 chars)"
           className={styles.customInput}
         />
       </div>

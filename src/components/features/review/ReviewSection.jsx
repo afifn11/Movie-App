@@ -94,7 +94,7 @@ export default function ReviewSection({ movie, posterUrl }) {
   };
 
   const handleAiHint = async () => {
-    if (!content.trim() || !rating) return;
+    if (!content.trim() || !rating || loadingHint) return; // Mencegah double-click spam (ARCH-07)
     try {
       setLoadingHint(true);
       const hint = await enhanceReview({
@@ -141,15 +141,16 @@ export default function ReviewSection({ movie, posterUrl }) {
 
           <textarea
             className={styles.textarea}
-            placeholder="Write your thoughts about this film... (optional)"
+            maxLength={1000}
+            placeholder="Write your thoughts about this film... (max 1000 chars)"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={4}
           />
 
-          {/* AI hint button — tampil sejak awal, cukup syaratkan rating */}
+          {/* AI hint button */}
           {rating > 0 && (
-            <button type="button" className={styles.aiHintBtn} onClick={handleAiHint} disabled={loadingHint}>
+            <button type="button" className={styles.aiHintBtn} onClick={handleAiHint} disabled={loadingHint || !content.trim()}>
               {loadingHint ? (
                 <span className={styles.smallSpinner} />
               ) : (

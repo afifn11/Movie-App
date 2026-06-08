@@ -22,7 +22,11 @@ export function useApiMovies(category) {
       setError(null);
       const data = await fetchers[category](pageNum);
       const transformed = data.results.map(transformMovie);
-      updateCache(category, append ? [...apiCache[category], ...transformed] : transformed);
+      
+      updateCache(category, (currentCacheData) =>
+        append ? [...(currentCacheData || []), ...transformed] : transformed
+      );
+      
       setHasMore(pageNum < data.total_pages);
       setPage(pageNum);
     } catch (err) {
@@ -32,20 +36,21 @@ export function useApiMovies(category) {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [category, apiCache]);
+  }, [category, updateCache]);
 
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore) fetchMovies(page + 1, true);
   }, [page, hasMore, loadingMore, fetchMovies]);
 
   useEffect(() => {
-    if (apiCache[category].length === 0) fetchMovies(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
+    if (apiCache[category]?.length === 0) {
+      fetchMovies(1);
+    }
+  }, [category, fetchMovies, apiCache]);
 
   return {
-    movies: apiCache[category],
-    loading: loading && apiCache[category].length === 0,
+    movies: apiCache[category] || [],
+    loading: loading && (apiCache[category]?.length || 0) === 0,
     loadingMore,
     error,
     hasMore,

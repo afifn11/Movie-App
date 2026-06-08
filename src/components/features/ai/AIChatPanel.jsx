@@ -29,14 +29,18 @@ export default function AIChatPanel({ movie }) {
     const q = (text || input).trim();
     if (!q || loading) return;
 
-    setMessages((prev) => [...prev, { role: 'user', text: q }]);
+    // Masukkan pesan user ke state UI sebelum mengirim permintaan ke server
+    const updatedMessages = [...messages, { role: 'user', text: q }];
+    setMessages(updatedMessages);
     setInput('');
     setLoading(true);
 
     try {
-      const reply = await chatAboutMovie(movie, q);
+      // Mengirimkan seluruh riwayat chat (updatedMessages) agar AI memahami konteks (ARCH-02)
+      const reply = await chatAboutMovie(movie, q, updatedMessages);
       setMessages((prev) => [...prev, { role: 'ai', text: reply }]);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setMessages((prev) => [...prev, { role: 'ai', text: 'Sorry, I encountered an error. Please try again.' }]);
     } finally {
       setLoading(false);
@@ -108,10 +112,11 @@ export default function AIChatPanel({ movie }) {
         <input
           ref={inputRef}
           type="text"
+          maxLength={200}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-          placeholder="Ask about this film..."
+          placeholder="Ask about this film... (max 200 chars)"
           className={styles.input}
           disabled={loading}
         />

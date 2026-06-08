@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 
 const MoviesContext = createContext(null);
 
@@ -9,9 +9,12 @@ export function MoviesProvider({ children }) {
     topRated: [],
   });
 
-  const updateCache = (key, movies) => {
-    setApiCache((prev) => ({ ...prev, [key]: movies }));
-  };
+  const updateCache = useCallback((key, updaterOrValue) => {
+    setApiCache((prev) => ({
+      ...prev,
+      [key]: typeof updaterOrValue === 'function' ? updaterOrValue(prev[key]) : updaterOrValue,
+    }));
+  }, []);
 
   return (
     <MoviesContext.Provider value={{ apiCache, updateCache }}>
