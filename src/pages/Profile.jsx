@@ -3,7 +3,7 @@ import { useUserReviews } from '../hooks/useReviews';
 import { useWatchlistDB } from '../hooks/useWatchlistDB';
 import { useWatchHistory } from '../hooks/useWatchHistory';
 import { useMovieLists } from '../hooks/useMovieLists';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Button from '../components/ui/Button/Button';
 import styles from './Profile.module.css';
 
@@ -27,11 +27,19 @@ function ActivityItem({ to, posterUrl, title, sub }) {
 }
 
 export default function ProfilePage() {
-  const { profile, user, signOut } = useAuth();
+  const { profile, user, signOut, loading: authLoading } = useAuth();
   const { reviews }   = useUserReviews();
   const { watchlist } = useWatchlistDB();
   const { history }   = useWatchHistory();
   const { lists }     = useMovieLists();
+
+  if (!user && !authLoading) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (authLoading) {
+    return <div className={styles.page}><div className="container">Loading profile...</div></div>;
+  }
 
   const name    = profile?.full_name || user?.user_metadata?.full_name || 'User';
   const avatar  = profile?.avatar_url || user?.user_metadata?.avatar_url;

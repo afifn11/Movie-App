@@ -1,4 +1,4 @@
-const API_KEY = import.meta.env.VITE_API_KEY;
+const READ_ACCESS_TOKEN = import.meta.env.VITE_TMDB_READ_TOKEN;
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE = 'https://image.tmdb.org/t/p';
 
@@ -10,14 +10,19 @@ export const IMG = {
 
 const buildUrl = (path, params = {}) => {
   const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set('api_key', API_KEY);
   url.searchParams.set('language', 'en-US');
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   return url.toString();
 };
 
 const apiFetch = async (url) => {
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${READ_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json;charset=utf-8'
+    }
+  });
+  
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 };

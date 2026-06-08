@@ -33,11 +33,14 @@ export function useMovieLists() {
   }, [user]);
 
   const deleteList = useCallback(async (listId) => {
-    await supabase.from('movie_lists').delete().eq('id', listId);
+    if (!user) return;
+    const { error } = await supabase.from('movie_lists').delete().eq('id', listId);
+    if (error) throw error; 
     setLists((prev) => prev.filter((l) => l.id !== listId));
-  }, []);
+  }, [user]);
 
   const updateList = useCallback(async (listId, updates) => {
+    if (!user) return;
     const { data, error } = await supabase
       .from('movie_lists')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -47,7 +50,7 @@ export function useMovieLists() {
     if (error) throw error;
     setLists((prev) => prev.map((l) => l.id === listId ? data : l));
     return data;
-  }, []);
+  }, [user]);
 
   return { lists, loading, createList, deleteList, updateList, refetch: fetchLists };
 }
@@ -71,6 +74,7 @@ export function useListDetail(listId) {
   }, [listId]);
 
   const addToList = useCallback(async (movie) => {
+    if (!user) return;
     const { data, error } = await supabase
       .from('list_items')
       .upsert({
@@ -87,16 +91,18 @@ export function useListDetail(listId) {
       const exists = prev.some((i) => i.movie_id === Number(movie.id));
       return exists ? prev : [data, ...prev];
     });
-  }, [listId]);
+  }, [listId, user]);
 
   const removeFromList = useCallback(async (movieId) => {
-    await supabase
+    if (!user) return;
+    const { error } = await supabase
       .from('list_items')
       .delete()
       .eq('list_id', Number(listId))
       .eq('movie_id', Number(movieId));
+    if (error) throw error;
     setItems((prev) => prev.filter((i) => i.movie_id !== Number(movieId)));
-  }, [listId]);
+  }, [listId, user]);
 
   const isOwner = user && list && list.user_id === user.id;
 
