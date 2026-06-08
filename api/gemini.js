@@ -1,11 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Inisialisasi SDK Gemini di sisi server menggunakan environment variable terenkripsi
-// eslint-disable-next-line no-undef
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-// Fungsi sterilisasi untuk mencegah prompt injection (CRIT-02)
+// Fungsi sterilisasi untuk mencegah prompt injection
 const sanitize = (str) => {
   return String(str ?? '')
     .replace(/[\r\n\t]/g, ' ')
@@ -22,7 +21,7 @@ export default async function handler(req, res) {
   const { action, payload } = req.body;
 
   try {
-    // 1. Fitur Chat Contekstual dengan Riwayat Percakapan (CRIT-02 & ARCH-02)
+    // ─── 1. Fitur Chat Contekstual ──────────────────────────────────────
     if (action === 'chat') {
       const { movie, question, history = [] } = payload;
       
@@ -37,7 +36,6 @@ Answer in the same language the user used to ask the question.
 Be concise (max 3 paragraphs), insightful, and avoid major spoilers unless the user explicitly asks.
 If asked about spoilers, warn first then answer.`;
 
-      // Menyusun riwayat percakapan yang valid untuk struktur Gemini SDK
       const formattedHistory = history.map((msg) => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: sanitize(msg.text) }],
@@ -48,12 +46,11 @@ If asked about spoilers, warn first then answer.`;
         systemInstruction: systemContext,
       });
 
-      // Menggunakan XML delimiters untuk mengisolasi input pengguna dari instruksi sistem
       const result = await chatSession.sendMessage(`<user_question>${sanitize(question)}</user_question>`);
       return res.status(200).json({ result: result.response.text() });
     }
 
-    // 2. Fitur Enhance Review Assistant (CRIT-02)
+    // ─── 2. Fitur Enhance Review Assistant ──────────────────────────────
     if (action === 'enhanceReview') {
       const { movieTitle, rating, draftReview, genres } = payload;
       
@@ -78,7 +75,7 @@ User's draft review:
       return res.status(200).json({ result: result.response.text() });
     }
 
-    // 3. Fitur Mood-based Discovery (CRIT-02)
+    // ─── 3. Fitur Mood-based Discovery ──────────────────────────────────
     if (action === 'getMood') {
       const { mood, timeAvailable, watchedTitles = [] } = payload;
       const avoidList = watchedTitles.slice(0, 20).join(', ');
@@ -107,6 +104,56 @@ Return ONLY a valid JSON array (no markdown, no explanation):
 ]
 
 IMPORTANT: "searchQuery" must be the exact English title of the film as it appears on TMDB.`;
+
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      const cleanJsonText = text.replace(/```json|```/g, '').trim();
+      
+      return res.status(200).json({ result: JSON.parse(cleanJsonText) });
+    }
+
+    // ─── 4. Fitur Rekomendasi Personal ──────────────────────────────────
+    if (action === 'getPersonal') {
+      const { watchlist, reviews, watchHistory } = payload;
+      
+      const topRated = reviews
+        .filter((r) => r.rating >= 7)
+        .map((r) => `${sanitize(r.movie_title)} (rated ${r.rating}/10)`)
+        .slice(0, 10);
+
+      const recentlyWatched = watchHistory
+        .slice(0, 8)
+        .map((h) => sanitize(h.movie_title));
+
+      const watchlistTitles = watchlist
+        .slice(0, 8)
+        .map((w) => sanitize(w.movie_title));
+
+      if (topRated.length === 0 && recentlyWatched.length === 0) {
+        return res.status(200).json({ result: null });
+      }
+
+      const prompt = `You are a film recommendation expert for Cinema App with deep knowledge of cinema.
+
+Based on this user's taste profile:
+Top rated films: ${topRated.length > 0 ? topRated.join(', ') : 'none yet'}
+Recently watched: ${recentlyWatched.length > 0 ? recentlyWatched.join(', ') : 'none yet'}
+Watchlist: ${watchlistTitles.length > 0 ? watchlistTitles.join(', ') : 'empty'}
+
+Analyze their taste deeply — look for patterns in themes, tone, directors, cinematography style, narrative complexity.
+
+Return ONLY a valid JSON array (no markdown, no explanation) with exactly 6 recommendations:
+[
+  {
+    "title": "Exact Film Title as known internationally",
+    "year": 2023,
+    "reason": "2-3 sentence explanation of why this specifically matches their taste",
+    "searchQuery": "exact film title"
+  }
+]
+
+IMPORTANT: "searchQuery" must be the exact English title of the film as it appears on TMDB.
+Recommend films they likely haven't seen. Avoid obvious mainstream blockbusters unless truly fitting.`;
 
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
