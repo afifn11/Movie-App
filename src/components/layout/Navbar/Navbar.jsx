@@ -3,13 +3,8 @@ import LoginModal from '../../features/auth/LoginModal';
 import { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { useWatchlistDB } from '../../../hooks/useWatchlistDB';
-
 
 import styles from './Navbar.module.css';
-
-// Re-export components at correct path
-
 
 const NAV_LINKS = [
   { to: '/',                  label: 'Home',        exact: true },
@@ -24,8 +19,8 @@ export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
-  const { watchlist } = useWatchlistDB();
+  
+  const { isAuthenticated, watchlist } = useAuth();
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 60);
@@ -75,7 +70,7 @@ export default function Navbar() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
-              {watchlist.length > 0 && (
+              {watchlist?.length > 0 && (
                 <span className={styles.badge}>{watchlist.length > 99 ? '99+' : watchlist.length}</span>
               )}
             </Link>
@@ -116,13 +111,11 @@ export default function Navbar() {
           <NavLink to="/watchlist" className={({ isActive }) => `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
             Watchlist
-            {watchlist.length > 0 && <span className={styles.mobileBadge}>{watchlist.length}</span>}
+            {watchlist?.length > 0 && <span className={styles.mobileBadge}>{watchlist.length}</span>}
           </NavLink>
 
-          {/* Divider */}
           <div className={styles.mobileDrawerDivider} />
 
-          {/* Auth — sign in only. Profile/Lists/SignOut ada di avatar dropdown */}
           {!isAuthenticated && (
             <button className={styles.mobileSignIn} onClick={() => { setMenuOpen(false); setLoginOpen(true); }}>
               Sign In with Google

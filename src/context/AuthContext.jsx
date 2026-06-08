@@ -6,38 +6,41 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [profile, setProfile] = useState(null);
+  const [watchlist, setWatchlist] = useState([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
+      if (session?.user) fetchUserData(session.user.id);
       else setLoading(false);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setUser(session?.user ?? null);
-        if (session?.user) fetchProfile(session.user.id);
-        else { setProfile(null); setLoading(false); }
+        if (session?.user) fetchUserData(session.user.id);
+        else { 
+          setProfile(null); 
+          setWatchlist([]); 
+          setLoading(false); 
+        }
       }
     );
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async (userId) => {
+  const fetchUserData = async (userId) => {
     try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      setProfile(data);
+      const [profileRes, watchlistRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', userId).single(),
+        supabase.from('watchlist').select('*').eq('user_id', userId).order('added_at', { ascending: false })
+      ]);
+      setProfile(profileRes.data);
+      setWatchlist(watchlistRes.data || []);
     } catch (err) {
-      console.error('Profile fetch error:', err);
+      console.error('User data fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -58,6 +61,7 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
+    setWatchlist([]);
   };
 
   const updateProfile = async (updates) => {
@@ -77,6 +81,8 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user,
       profile,
+      watchlist, 
+      setWatchlist, 
       loading,
       signInWithGoogle,
       signOut,

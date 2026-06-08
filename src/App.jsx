@@ -1,40 +1,49 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import { MoviesProvider } from './context/MoviesContext';
 import { AuthProvider } from './context/AuthContext';
 
-import Home from './pages/Home';
-import Detail from './pages/Detail';
-import Search from './pages/Search';
-import Discover from './pages/Discover';
-import Watchlist from './pages/Watchlist';
-import Profile from './pages/Profile';
-import Lists from './pages/Lists';
-import ListDetail from './pages/ListDetail';
-import Popular from './pages/movie/Popular';
-import NowPlaying from './pages/movie/NowPlaying';
-import TopRated from './pages/movie/TopRated';
-import NotFound from './pages/NotFound';
+const Home       = lazy(() => import('./pages/Home'));
+const Detail     = lazy(() => import('./pages/Detail'));
+const Search     = lazy(() => import('./pages/Search'));
+const Discover   = lazy(() => import('./pages/Discover'));
+const Watchlist  = lazy(() => import('./pages/Watchlist'));
+const Profile    = lazy(() => import('./pages/Profile'));
+const Lists      = lazy(() => import('./pages/Lists'));
+const ListDetail = lazy(() => import('./pages/ListDetail'));
+const Popular    = lazy(() => import('./pages/movie/Popular'));
+const NowPlaying = lazy(() => import('./pages/movie/NowPlaying'));
+const TopRated   = lazy(() => import('./pages/movie/TopRated'));
+const NotFound   = lazy(() => import('./pages/NotFound'));
+
+const PageLoader = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: '#64748b' }}>
+    Loading...
+  </div>
+);
 
 export default function App() {
   return (
     <AuthProvider>
       <MoviesProvider>
         <AppLayout>
-          <Routes>
-            <Route path="/"                  element={<Home />} />
-            <Route path="/search"            element={<Search />} />
-            <Route path="/discover"          element={<Discover />} />
-            <Route path="/watchlist"         element={<Watchlist />} />
-            <Route path="/profile"           element={<Profile />} />
-            <Route path="/lists"             element={<Lists />} />
-            <Route path="/lists/:id"         element={<ListDetail />} />
-            <Route path="/movie/popular"     element={<Popular />} />
-            <Route path="/movie/now-playing" element={<NowPlaying />} />
-            <Route path="/movie/top-rated"   element={<TopRated />} />
-            <Route path="/movie/:id"         element={<Detail />} />
-            <Route path="*"                  element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/"                  element={<Home />} />
+              <Route path="/search"            element={<Search />} />
+              <Route path="/discover"          element={<Discover />} />
+              <Route path="/watchlist"         element={<Watchlist />} />
+              <Route path="/profile"           element={<Profile />} />
+              <Route path="/lists"             element={<Lists />} />
+              <Route path="/lists/:id"         element={<ListDetail />} />
+              <Route path="/movie/popular"     element={<Popular />} />
+              <Route path="/movie/now-playing" element={<NowPlaying />} />
+              <Route path="/movie/top-rated"   element={<TopRated />} />
+              <Route path="/movie/:id"         element={<Detail />} />
+              <Route path="*"                  element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </AppLayout>
       </MoviesProvider>
     </AuthProvider>

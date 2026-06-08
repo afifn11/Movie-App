@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getPersonalRecommendations } from '../../../lib/gemini';
 import { movieService } from '../../../services/movieService';
 import { Link } from 'react-router-dom';
@@ -19,26 +19,13 @@ export default function AIRecommendations({ watchlist, reviews, watchHistory }) 
       const raw = await getPersonalRecommendations({ watchlist, reviews, watchHistory });
       if (!raw) { setFetched(true); setLoading(false); return; }
 
-      // Enrich with TMDB search — multiple fallback strategies
       const enriched = await Promise.all(
         raw.map(async (rec) => {
           try {
-            // Strategy 1: searchQuery from Gemini
-            let match = null;
-            const data1 = await movieService.search(rec.searchQuery, 1);
-            match = data1.results[0];
-
-            // Strategy 2: title + year
-            if (!match?.poster_path && rec.title) {
-              const data2 = await movieService.search(`${rec.title} ${rec.year}`, 1);
-              match = data2.results[0] || match;
-            }
-
-            // Strategy 3: title only
-            if (!match?.poster_path && rec.title) {
-              const data3 = await movieService.search(rec.title, 1);
-              match = data3.results[0] || match;
-            }
+            // Gunakan query yang paling lengkap (utamakan searchQuery dari AI)
+            const queryToUse = rec.searchQuery || rec.title;
+            const data = await movieService.search(queryToUse, 1);
+            const match = data.results[0];
 
             return {
               ...rec,
@@ -111,8 +98,8 @@ export default function AIRecommendations({ watchlist, reviews, watchHistory }) 
 
       {recs.length > 0 && (
         <div className={styles.grid}>
-          {recs.map((rec, i) => (
-            <div key={i} className={styles.card}>
+          {recs.map((rec) => (
+            <div key={`${rec.title}-${rec.year}`} className={styles.card}>
               {rec.poster ? (
                 <img src={rec.poster} alt={rec.title} className={styles.poster} />
               ) : (
