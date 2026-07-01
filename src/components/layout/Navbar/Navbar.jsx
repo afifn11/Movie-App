@@ -47,7 +47,7 @@ export default function Navbar() {
                 <path d="M7 3V21M17 3V21M1 9H7M17 9H23M1 15H7M17 15H23" stroke="currentColor" strokeWidth="2"/>
               </svg>
             </span>
-            <span className={styles.logoText}>CINE<span className={styles.logoAccent}>MA</span></span>
+            <span className={styles.logoText}>Netfif <span className={styles.logoAccent}>Cinema</span></span>
           </Link>
 
           <nav className={styles.desktopNav}>

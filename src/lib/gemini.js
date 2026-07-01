@@ -1,8 +1,22 @@
+import { supabase } from './supabase';
+
 async function fetchFromBackendAI(action, payload) {
+  // 🛡️ 1. Ambil token sesi pengguna saat ini dari Supabase
+  const { data: { session }, error } = await supabase.auth.getSession();
+
+  // 🛡️ 2. Cegah request jika user belum login (menghemat bandwidth dan menghindari 401 log)
+  if (error || !session) {
+    throw new Error('Authentication required: You must be logged in to use AI features.');
+  }
+
+  const token = session.access_token;
+
+  // 🛡️ 3. Kirim request dengan header Authorization
   const response = await fetch('/api/gemini', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` // Suntikkan token JWT ke sini
     },
     body: JSON.stringify({ action, payload }),
   });
@@ -31,7 +45,7 @@ export async function getMoodRecommendations({ mood, timeAvailable, watchedTitle
   return fetchFromBackendAI('getMood', { mood, timeAvailable, watchedTitles });
 }
 
-// ─── 4. Rekomendasi hyper-personal (Fungsi yang sebelumnya terlewat) ───
+// ─── 4. Rekomendasi hyper-personal ─────────────────────────────────────
 export async function getPersonalRecommendations({ watchlist, reviews, watchHistory }) {
   return fetchFromBackendAI('getPersonal', { watchlist, reviews, watchHistory });
 }
