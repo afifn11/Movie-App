@@ -74,7 +74,10 @@
 .customInput:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px var(--color-accent-dim);
+  outline: none;
 }
+/* 🛡️ Added focus-visible for accessibility */
+.customInput:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
 .customInput::placeholder { color: var(--color-text-muted); }
 

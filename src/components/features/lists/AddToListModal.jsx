@@ -1,23 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from '../../ui/Modal/Modal';
 import { useMovieLists } from '../../../hooks/useMovieLists';
-import { useListDetail } from '../../../hooks/useMovieLists';
 import { useAuth } from '../../../context/AuthContext';
 import Button from '../../ui/Button/Button';
 import styles from './AddToListModal.module.css';
 
-function ListRow({ list, movie, onSuccess }) {
-  const { items, addToList } = useListDetail(list.id);
+// 🛡️ ListRow is now a pure presentational component (No data fetching inside)
+function ListRow({ list, movie, alreadyIn, addMovieToList, onSuccess }) {
   const [adding, setAdding] = useState(false);
   const [done, setDone] = useState(false);
-
-  const alreadyIn = items.some((i) => i.movie_id === Number(movie.id));
 
   const handleAdd = async () => {
     if (alreadyIn || done) return;
     try {
       setAdding(true);
-      await addToList(movie);
+      await addMovieToList(list.id, movie);
       setDone(true);
       onSuccess?.(list.name);
     } catch (err) {
@@ -62,11 +59,36 @@ function ListRow({ list, movie, onSuccess }) {
 
 export default function AddToListModal({ isOpen, onClose, movie }) {
   const { isAuthenticated } = useAuth();
-  const { lists, loading, createList } = useMovieLists();
+  
+  // 🛡️ Extracted optimized functions
+  const { lists, loading: listsLoading, createList, getListsContainingMovie, addMovieToList } = useMovieLists();
+  
   const [successMsg, setSuccessMsg] = useState('');
   const [creatingNew, setCreatingNew] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [creating, setCreating] = useState(false);
+  
+  // 🛡️ Local state to hold the single query result
+  const [presentInLists, setPresentInLists] = useState(new Set());
+  const [checkingPresence, setCheckingPresence] = useState(true);
+
+  // Execute 1 query when modal opens to find which lists have this movie
+  useEffect(() => {
+    if (isOpen && movie && lists.length > 0) {
+      setCheckingPresence(true);
+      getListsContainingMovie(movie.id)
+        .then((movieListsSet) => {
+          setPresentInLists(movieListsSet);
+          setCheckingPresence(false);
+        })
+        .catch((err) => {
+          console.error("Failed to check movie presence:", err);
+          setCheckingPresence(false);
+        });
+    } else {
+      setCheckingPresence(false);
+    }
+  }, [isOpen, movie, lists, getListsContainingMovie]);
 
   const handleSuccess = (listName) => {
     setSuccessMsg(`Added to "${listName}"`);
@@ -80,6 +102,7 @@ export default function AddToListModal({ isOpen, onClose, movie }) {
       await createList({ name: newListName.trim(), isPublic: false });
       setNewListName('');
       setCreatingNew(false);
+      // Data presence will re-verify seamlessly due to useEffect listening to `lists` dependency
     } catch (err) {
       console.error(err);
     } finally {
@@ -114,7 +137,7 @@ export default function AddToListModal({ isOpen, onClose, movie }) {
         </div>
 
         {/* Lists */}
-        {loading ? (
+        {listsLoading || checkingPresence ? (
           <p className={styles.loadingText}>Loading your lists...</p>
         ) : lists.length === 0 && !creatingNew ? (
           <p className={styles.emptyText}>You have no lists yet.</p>
@@ -125,6 +148,8 @@ export default function AddToListModal({ isOpen, onClose, movie }) {
                 key={list.id}
                 list={list}
                 movie={movie}
+                alreadyIn={presentInLists.has(list.id)}
+                addMovieToList={addMovieToList}
                 onSuccess={handleSuccess}
               />
             ))}

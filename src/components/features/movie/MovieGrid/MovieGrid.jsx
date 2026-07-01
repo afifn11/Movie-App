@@ -5,6 +5,7 @@ import { MovieCardSkeleton } from '../../../ui/Skeleton/Skeleton';
 import { EmptyState } from '../../../ui/StateViews/StateViews';
 import Button from '../../../ui/Button/Button';
 import { movieService } from '../../../../services/movieService';
+import { useMovies } from '../../../../context/MoviesContext';
 import styles from './MovieGrid.module.css';
 
 export default function MovieGrid({
@@ -17,15 +18,21 @@ export default function MovieGrid({
   showGenreFilter = false,
   skeletonCount = 12,
 }) {
-  const [genres, setGenres] = useState([]);
+  // 🛡️ Menggunakan context cache
+  const { apiCache, updateCache } = useMovies();
+  const genres = apiCache.genres || [];
+  
   const [activeGenre, setActiveGenre] = useState(null);
 
+  const isGenresCached = genres.length > 0;
+
   useEffect(() => {
-    if (!showGenreFilter) return;
+    if (!showGenreFilter || isGenresCached) return;
+
     movieService.getGenres()
-      .then((data) => setGenres(data.genres || []))
-      .catch(() => {});
-  }, [showGenreFilter]);
+      .then((data) => updateCache('genres', data.genres || []))
+      .catch((err) => console.error('Failed to fetch genres:', err));
+  }, [showGenreFilter, isGenresCached, updateCache]);
 
   const filtered = activeGenre
     ? movies.filter((m) =>

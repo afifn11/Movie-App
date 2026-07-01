@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import { movieService, getTrailerKey, IMG } from '../../../../services/movieService';
+import { useMovies } from '../../../../context/MoviesContext';
 import Button from '../../../ui/Button/Button';
 import Badge from '../../../ui/Badge/Badge';
 import { HeroSkeleton } from '../../../ui/Skeleton/Skeleton';
 import styles from './Hero.module.css';
 
 export default function Hero() {
-  const [movie, setMovie] = useState(null);
-  const [trailerKey, setTrailerKey] = useState(null);
-  const [genres, setGenres] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // 🛡️ Menggunakan context cache
+  const { apiCache, updateCache } = useMovies();
+  const cachedHero = apiCache.heroData;
+
+  const [loading, setLoading] = useState(!cachedHero);
+
+  const isHeroCached = !!cachedHero;
 
   useEffect(() => {
+    if (isHeroCached) {
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
 
     async function fetchHeroMovie() {
@@ -25,9 +34,12 @@ export default function Hero() {
         ]);
 
         if (!cancelled) {
-          setMovie(detail);
-          setGenres(detail.genres?.slice(0, 3).map((g) => g.name) ?? []);
-          setTrailerKey(getTrailerKey(videos));
+          // Menyimpan hasil fetch terpadu ke global cache
+          updateCache('heroData', {
+            movie: detail,
+            trailerKey: getTrailerKey(videos),
+            genres: detail.genres?.slice(0, 3).map((g) => g.name) ?? []
+          });
         }
       } catch (err) {
         console.error('Hero fetch error:', err);
@@ -38,11 +50,12 @@ export default function Hero() {
 
     fetchHeroMovie();
     return () => { cancelled = true; };
-  }, []);
+  }, [isHeroCached, updateCache]);
 
   if (loading) return <HeroSkeleton />;
-  if (!movie) return null;
+  if (!cachedHero || !cachedHero.movie) return null;
 
+  const { movie, trailerKey, genres } = cachedHero;
   const backdropUrl = IMG.backdrop(movie.backdrop_path);
   const rating = movie.vote_average?.toFixed(1);
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';

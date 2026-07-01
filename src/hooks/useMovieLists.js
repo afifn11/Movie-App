@@ -52,7 +52,36 @@ export function useMovieLists() {
     return data;
   }, [user]);
 
-  return { lists, loading, createList, deleteList, updateList, refetch: fetchLists };
+  // 🚀 OPTIMIZATION: Check presence of a movie in all lists using 1 Query
+  const getListsContainingMovie = useCallback(async (movieId) => {
+    if (!lists.length) return new Set();
+    const { data } = await supabase
+      .from('list_items')
+      .select('list_id')
+      .eq('movie_id', Number(movieId))
+      .in('list_id', lists.map(l => l.id));
+    return new Set((data || []).map(d => d.list_id));
+  }, [lists]);
+
+  // 🚀 OPTIMIZATION: Lightweight add function (bypasses full detail cache)
+  const addMovieToList = useCallback(async (listId, movie) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from('list_items')
+      .upsert({
+        list_id:     Number(listId),
+        movie_id:    Number(movie.id),
+        movie_title: movie.title,
+        poster_url:  movie.poster || null,
+        year:        String(movie.year || ''),
+      }, { onConflict: 'list_id,movie_id' });
+    if (error) throw error;
+  }, [user]);
+
+  return { 
+    lists, loading, createList, deleteList, updateList, refetch: fetchLists,
+    getListsContainingMovie, addMovieToList // Export optimized functions
+  };
 }
 
 export function useListDetail(listId) {

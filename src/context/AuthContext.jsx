@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -55,16 +55,16 @@ export function AuthProvider({ children }) {
       },
     });
     if (error) throw error;
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
     setWatchlist([]);
-  };
+  }, []);
 
-  const updateProfile = async (updates) => {
+  const updateProfile = useCallback(async (updates) => {
     if (!user) return;
     const { data, error } = await supabase
       .from('profiles')
@@ -75,20 +75,23 @@ export function AuthProvider({ children }) {
     if (error) throw error;
     setProfile(data);
     return data;
-  };
+  }, [user]);
+
+  // 🛡️ Memutus Re-render Cascade dengan memoisasi context value
+  const contextValue = useMemo(() => ({
+    user,
+    profile,
+    watchlist,
+    setWatchlist,
+    loading,
+    signInWithGoogle,
+    signOut,
+    updateProfile,
+    isAuthenticated: !!user,
+  }), [user, profile, watchlist, loading, signInWithGoogle, signOut, updateProfile]);
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      profile,
-      watchlist, 
-      setWatchlist, 
-      loading,
-      signInWithGoogle,
-      signOut,
-      updateProfile,
-      isAuthenticated: !!user,
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

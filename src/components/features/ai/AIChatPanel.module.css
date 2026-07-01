@@ -242,7 +242,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.input:focus { border-color: var(--color-accent); }
+.input:focus { border-color: var(--color-accent); outline: none; }
+/* 🛡️ Added focus-visible for accessibility */
+.input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
 .input::placeholder { color: var(--color-text-muted); }
 .input:disabled { opacity: 0.5; }
 

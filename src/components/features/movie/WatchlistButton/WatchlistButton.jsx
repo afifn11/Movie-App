@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { useAuth } from '../../../../context/AuthContext';
 import { useWatchlistDB } from '../../../../hooks/useWatchlistDB';
 import styles from './WatchlistButton.module.css';
 
-export default function WatchlistButton({ movie, className = '', onLoginRequired }) {
+function WatchlistButton({ movie, className = '', onLoginRequired }) {
   const { isAuthenticated } = useAuth();
   const { isInWatchlist, toggleWatchlist } = useWatchlistDB();
   const saved = isInWatchlist(movie.id);
@@ -34,3 +35,6 @@ export default function WatchlistButton({ movie, className = '', onLoginRequired
     </button>
   );
 }
+
+// 🛡️ Memoisasi komponen WatchlistButton
+export default memo(WatchlistButton);

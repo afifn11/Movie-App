@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import Button from '../../../ui/Button/Button';
-import Badge from '../../../ui/Badge/Badge';
 import { PageLoader, ErrorState } from '../../../ui/StateViews/StateViews';
 import { IMG } from '../../../../services/movieService';
 import { useWatchlistDB } from '../../../../hooks/useWatchlistDB';
 import { useWatchHistory } from '../../../../hooks/useWatchHistory';
-import AddToListModal from '../../lists/AddToListModal';
 import { useAuth } from '../../../../context/AuthContext';
+import AddToListModal from '../../lists/AddToListModal';
 import ReviewSection from '../../review/ReviewSection';
 import AIChatPanel from '../../ai/AIChatPanel';
 import styles from './DetailMovie.module.css';
+
+// 🛡️ Mengimpor Sub-Komponen yang Diekstrak (SRP)
+import MoviePoster from './MoviePoster';
+import MovieMeta from './MovieMeta';
+import MovieStats from './MovieStats';
+import MovieActions from './MovieActions';
+import MovieCast from './MovieCast';
 
 export default function DetailMovie({ movie, trailerKey, credits, loading, error, onLoginRequired }) {
   const { isAuthenticated } = useAuth();
@@ -26,6 +31,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
   const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : '';
   const director = credits?.crew?.find((c) => c.job === 'Director')?.name;
+  
   const saved = isInWatchlist(movie.id);
   const watched = hasWatched(movie.id);
 
@@ -50,161 +56,52 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
       )}
 
       <div className={`container ${styles.container}`}>
-        {/* Poster */}
+        
+        {/* Kolom Poster Terpisah */}
         <div className={styles.posterCol}>
-          <div className={styles.posterWrap}>
-            <img
-              src={posterUrl || 'https://placehold.co/400x600/111720/4a5568?text=No+Image'}
-              alt={`${movie.title} poster`}
-              className={styles.poster}
-            />
-            {rating && (
-              <div className={styles.ratingPill}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                </svg>
-                <span>{rating}</span>
-                <span className={styles.ratingMax}>/10</span>
-              </div>
-            )}
-          </div>
+          <MoviePoster posterUrl={posterUrl} title={movie.title} rating={rating} />
         </div>
 
-        {/* Info */}
+        {/* Kolom Konten Utama */}
         <div className={styles.infoCol}>
-          <div className={styles.titleRow}>
-            <h1 className={styles.title}>{movie.title}</h1>
-            {movie.tagline && <p className={styles.tagline}>"{movie.tagline}"</p>}
-          </div>
+          <MovieMeta
+            title={movie.title}
+            tagline={movie.tagline}
+            year={year}
+            runtime={runtime}
+            status={movie.status}
+            watched={watched}
+            genres={movie.genres}
+            overview={movie.overview}
+          />
 
-          <div className={styles.metaRow}>
-            {year && <span className={styles.metaChip}>{year}</span>}
-            {runtime && <span className={styles.metaChip}>{runtime}</span>}
-            {movie.status && (
-              <span className={`${styles.metaChip} ${movie.status === 'Released' ? styles.metaGreen : ''}`}>
-                {movie.status}
-              </span>
-            )}
-            {watched && <span className={`${styles.metaChip} ${styles.metaWatched}`}>✓ Watched</span>}
-          </div>
+          <MovieStats
+            director={director}
+            voteCount={movie.vote_count}
+            budget={movie.budget}
+            revenue={movie.revenue}
+          />
 
-          {movie.genres?.length > 0 && (
-            <div className={styles.genres}>
-              {movie.genres.map((g) => <Badge key={g.id} variant="genre">{g.name}</Badge>)}
-            </div>
-          )}
+          <MovieActions
+            trailerKey={trailerKey}
+            saved={saved}
+            watched={watched}
+            imdbId={movie.imdb_id}
+            isAuthenticated={isAuthenticated}
+            onToggleWatchlist={() => handleAuthAction(() => toggleWatchlist(watchlistMovie))}
+            onMarkWatched={() => handleAuthAction(() => markAsWatched(watchlistMovie))}
+            onAddToList={() => setListModalOpen(true)}
+          />
 
-          <div className={styles.block}>
-            <h3 className={styles.blockLabel}>Overview</h3>
-            <p className={styles.overview}>{movie.overview || 'No overview available.'}</p>
-          </div>
-
-          <div className={styles.stats}>
-            {director && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Director</span>
-                <span className={styles.statValue}>{director}</span>
-              </div>
-            )}
-            {movie.vote_count > 0 && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Votes</span>
-                <span className={styles.statValue}>{movie.vote_count.toLocaleString()}</span>
-              </div>
-            )}
-            {movie.budget > 0 && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Budget</span>
-                <span className={styles.statValue}>${(movie.budget / 1e6).toFixed(0)}M</span>
-              </div>
-            )}
-            {movie.revenue > 0 && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Revenue</span>
-                <span className={styles.statValue}>${(movie.revenue / 1e6).toFixed(0)}M</span>
-              </div>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className={styles.actions}>
-            {trailerKey && (
-              <Button as="a" href={`https://www.youtube.com/watch?v=${trailerKey}`}
-                target="_blank" rel="noopener noreferrer" variant="primary" size="lg">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3L19 12L5 21V3Z"/></svg>
-                Watch Trailer
-              </Button>
-            )}
-            <Button
-              variant={saved ? 'danger' : 'secondary'} size="lg"
-              onClick={() => handleAuthAction(() => toggleWatchlist(watchlistMovie))}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24"
-                fill={saved ? 'currentColor' : 'none'}
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-              </svg>
-              {saved ? 'In Watchlist' : 'Add to Watchlist'}
-            </Button>
-            <Button
-              variant={watched ? 'secondary' : 'ghost'} size="lg"
-              onClick={() => handleAuthAction(() => markAsWatched(watchlistMovie))}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              {watched ? 'Watched' : 'Mark as Watched'}
-            </Button>
-            {isAuthenticated && (
-              <Button
-                variant="ghost" size="lg"
-                onClick={() => setListModalOpen(true)}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                Add to List
-              </Button>
-            )}
-            {movie.imdb_id && (
-              <Button as="a" href={`https://www.imdb.com/title/${movie.imdb_id}`}
-                target="_blank" rel="noopener noreferrer" variant="ghost" size="lg">
-                IMDB
-              </Button>
-            )}
-          </div>
-
-          {/* AI Chat */}
           <AIChatPanel movie={{ ...movie, director }} />
 
-          {/* Cast */}
-          {credits?.cast?.length > 0 && (
-            <div className={styles.block}>
-              <h3 className={styles.blockLabel}>Top Cast</h3>
-              <div className={styles.cast}>
-                {credits.cast.slice(0, 6).map((actor) => (
-                  <div key={actor.id} className={styles.castMember}>
-                    <div className={styles.castAvatar}>
-                      {actor.profile_path ? (
-                        <img src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`} alt={actor.name} loading="lazy" />
-                      ) : (
-                        <span className={styles.castAvatarFallback}>{actor.name[0]}</span>
-                      )}
-                    </div>
-                    <span className={styles.castName}>{actor.name}</span>
-                    <span className={styles.castChar}>{actor.character}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <MovieCast cast={credits?.cast} />
 
-          {/* Reviews */}
           <ReviewSection movie={movie} posterUrl={posterUrl} />
         </div>
       </div>
-      {/* Add to List Modal */}
+      
+      {/* Modal Terpisah */}
       <AddToListModal
         isOpen={listModalOpen}
         onClose={() => setListModalOpen(false)}

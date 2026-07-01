@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import { MoviesProvider } from './context/MoviesContext';
 import { AuthProvider } from './context/AuthContext';
+import ErrorBoundary from './components/ui/ErrorBoundary/ErrorBoundary';
 
 const Home       = lazy(() => import('./pages/Home'));
 const Detail     = lazy(() => import('./pages/Detail'));
@@ -28,22 +29,24 @@ export default function App() {
     <AuthProvider>
       <MoviesProvider>
         <AppLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/"                  element={<Home />} />
-              <Route path="/search"            element={<Search />} />
-              <Route path="/discover"          element={<Discover />} />
-              <Route path="/watchlist"         element={<Watchlist />} />
-              <Route path="/profile"           element={<Profile />} />
-              <Route path="/lists"             element={<Lists />} />
-              <Route path="/lists/:id"         element={<ListDetail />} />
-              <Route path="/movie/popular"     element={<Popular />} />
-              <Route path="/movie/now-playing" element={<NowPlaying />} />
-              <Route path="/movie/top-rated"   element={<TopRated />} />
-              <Route path="/movie/:id"         element={<Detail />} />
-              <Route path="*"                  element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/"                  element={<Home />} />
+                <Route path="/search"            element={<Search />} />
+                <Route path="/discover"          element={<Discover />} />
+                <Route path="/watchlist"         element={<Watchlist />} />
+                <Route path="/profile"           element={<Profile />} />
+                <Route path="/lists"             element={<Lists />} />
+                <Route path="/lists/:id"         element={<ListDetail />} />
+                <Route path="/movie/popular"     element={<Popular />} />
+                <Route path="/movie/now-playing" element={<NowPlaying />} />
+                <Route path="/movie/top-rated"   element={<TopRated />} />
+                <Route path="/movie/:id"         element={<Detail />} />
+                <Route path="*"                  element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </AppLayout>
       </MoviesProvider>
     </AuthProvider>

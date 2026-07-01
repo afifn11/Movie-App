@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 const MoviesContext = createContext(null);
 
@@ -16,8 +16,14 @@ export function MoviesProvider({ children }) {
     }));
   }, []);
 
+  // 🛡️ Memutus Re-render Cascade
+  const contextValue = useMemo(() => ({
+    apiCache, 
+    updateCache
+  }), [apiCache, updateCache]);
+
   return (
-    <MoviesContext.Provider value={{ apiCache, updateCache }}>
+    <MoviesContext.Provider value={contextValue}>
       {children}
     </MoviesContext.Provider>
   );

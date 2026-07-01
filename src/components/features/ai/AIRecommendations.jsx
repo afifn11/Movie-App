@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getPersonalRecommendations } from '../../../lib/gemini';
-import { movieService } from '../../../services/movieService';
+import { enrichWithTmdbPoster } from '../../../hooks/useEnrichWithTmdb';
 import { Link } from 'react-router-dom';
 import styles from './AIRecommendations.module.css';
 
@@ -16,33 +16,17 @@ export default function AIRecommendations({ watchlist, reviews, watchHistory }) 
     try {
       setLoading(true);
       setError(null);
+      
       const raw = await getPersonalRecommendations({ watchlist, reviews, watchHistory });
       if (!raw) { setFetched(true); setLoading(false); return; }
 
-      const enriched = await Promise.all(
-        raw.map(async (rec) => {
-          try {
-            // Gunakan query yang paling lengkap (utamakan searchQuery dari AI)
-            const queryToUse = rec.searchQuery || rec.title;
-            const data = await movieService.search(queryToUse, 1);
-            const match = data.results[0];
-
-            return {
-              ...rec,
-              tmdbId: match?.id || null,
-              poster: match?.poster_path
-                ? `https://image.tmdb.org/t/p/w342${match.poster_path}`
-                : null,
-              tmdbRating: match?.vote_average?.toFixed(1) || null,
-            };
-          } catch {
-            return { ...rec, tmdbId: null, poster: null };
-          }
-        })
-      );
+      // 🛡️ Menggunakan utility yang tersentralisasi untuk merapikan logika
+      const enriched = await enrichWithTmdbPoster(raw);
+      
       setRecs(enriched);
       setFetched(true);
     } catch (err) {
+      console.error(err);
       setError('Could not load recommendations. Please try again.');
     } finally {
       setLoading(false);

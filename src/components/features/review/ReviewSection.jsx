@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMovieReviews } from '../../../hooks/useReviews';
 import { useAuth } from '../../../context/AuthContext';
 import { enhanceReview } from '../../../lib/gemini';
 import Button from '../../ui/Button/Button';
 import styles from './ReviewSection.module.css';
 
-const RATINGS = [1,2,3,4,5,6,7,8,9,10];
+const RATINGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 function StarRating({ value, onChange, readonly = false }) {
   const [hovered, setHovered] = useState(null);
@@ -27,7 +27,7 @@ function StarRating({ value, onChange, readonly = false }) {
           {n <= 5 ? '★' : '☆'}
         </button>
       ))}
-      {value && <span className={styles.ratingNum}>{value}/10</span>}
+      {value > 0 && <span className={styles.ratingNum}>{value}/10</span>}
     </div>
   );
 }
@@ -67,12 +67,23 @@ function ReviewCard({ review }) {
 export default function ReviewSection({ movie, posterUrl }) {
   const { user, isAuthenticated } = useAuth();
   const { reviews, userReview, loading, submitReview, deleteReview, avgRating } = useMovieReviews(movie?.id);
-  const [rating, setRating]     = useState(userReview?.rating || 0);
-  const [content, setContent]   = useState(userReview?.content || '');
+  
+  // 🛡️ Mengatur nilai inisial murni statis
+  const [rating, setRating]     = useState(0);
+  const [content, setContent]   = useState('');
+  
   const [submitting, setSubmitting] = useState(false);
   const [aiHint, setAiHint]     = useState('');
   const [loadingHint, setLoadingHint] = useState(false);
   const [showForm, setShowForm] = useState(false);
+
+  // 🛡️ Menerapkan sinkronisasi async yang benar
+  useEffect(() => {
+    if (userReview) {
+      setRating(userReview.rating);
+      setContent(userReview.content || '');
+    }
+  }, [userReview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,7 +105,7 @@ export default function ReviewSection({ movie, posterUrl }) {
   };
 
   const handleAiHint = async () => {
-    if (!content.trim() || !rating || loadingHint) return; // Mencegah double-click spam (ARCH-07)
+    if (!content.trim() || !rating || loadingHint) return;
     try {
       setLoadingHint(true);
       const hint = await enhanceReview({

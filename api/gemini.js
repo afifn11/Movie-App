@@ -1,10 +1,20 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createClient } from '@supabase/supabase-js';
 
-// Inisialisasi SDK Gemini di sisi server menggunakan environment variable terenkripsi
+// Inisialisasi SDK Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-// Fungsi sterilisasi untuk mencegah prompt injection
+// Inisialisasi Supabase Admin Client untuk verifikasi JWT
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// 🛡️ Basic In-Memory Rate Limiter (Berlaku per serverless instance)
+const rateLimitCache = new Map();
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 menit
+const MAX_REQUESTS = 15; // Maksimal 15 request per menit per user
+
 const sanitize = (str) => {
   return String(str ?? '')
     .replace(/[\r\n\t]/g, ' ')
@@ -13,14 +23,46 @@ const sanitize = (str) => {
 };
 
 export default async function handler(req, res) {
-  // Hanya menerima metode POST demi keamanan data
+  // Hanya menerima POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { action, payload } = req.body;
-
   try {
+    // ─── 🔒 AUTH GUARD & RATE LIMITING ──────────────────────────────────
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
+
+    // Rate Limit Check
+    const now = Date.now();
+    const userRateData = rateLimitCache.get(user.id) || { count: 0, startTime: now };
+
+    if (now - userRateData.startTime > RATE_LIMIT_WINDOW_MS) {
+      // Reset window
+      userRateData.count = 1;
+      userRateData.startTime = now;
+    } else {
+      userRateData.count += 1;
+    }
+    
+    rateLimitCache.set(user.id, userRateData);
+
+    if (userRateData.count > MAX_REQUESTS) {
+      return res.status(429).json({ error: 'Too Many Requests: Please slow down.' });
+    }
+    // ───────────────────────────────────────────────────────────────────
+
+    const { action, payload } = req.body;
+
     // ─── 1. Fitur Chat Contekstual ──────────────────────────────────────
     if (action === 'chat') {
       const { movie, question, history = [] } = payload;
@@ -165,6 +207,7 @@ Recommend films they likely haven't seen. Avoid obvious mainstream blockbusters 
     return res.status(400).json({ error: 'Invalid backend action requested' });
   } catch (error) {
     console.error('Server Serverless Error:', error);
+    // Menyembunyikan detail stack trace dari client demi keamanan
     return res.status(500).json({ error: 'AI Service is temporarily unavailable' });
   }
 }

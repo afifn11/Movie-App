@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getMoodRecommendations } from '../../../lib/gemini';
-import { movieService } from '../../../services/movieService';
+import { enrichWithTmdbPoster } from '../../../hooks/useEnrichWithTmdb';
 import { Link } from 'react-router-dom';
 import styles from './MoodPicker.module.css';
 
@@ -34,52 +34,24 @@ export default function MoodPicker({ watchHistory = [] }) {
   const handleFind = async () => {
     const finalMood = customMood.trim() || mood;
     if (!finalMood) return;
+    
     try {
       setLoading(true);
       setError(null);
       setResults([]);
 
       const watchedTitles = watchHistory.map((h) => h.movie_title);
+      
+      // 1. Dapatkan metadata film dari Gemini
       const recs = await getMoodRecommendations({
         mood: finalMood,
         timeAvailable: time,
         watchedTitles,
       });
 
-      // Sinkronisasi dengan poster gambar data TMDB
-      const enriched = await Promise.all(
-        recs.map(async (rec) => {
-          try {
-            let match = null;
-
-            // Strategi fallback 1: Menggunakan searchQuery dari Gemini
-            const data1 = await movieService.search(rec.searchQuery, 1);
-            match = data1.results[0];
-
-            // Strategi fallback 2: Kombinasi judul + tahun rilis
-            if (!match?.poster_path && rec.title) {
-              const data2 = await movieService.search(`${rec.title} ${rec.year}`, 1);
-              match = data2.results[0] || match;
-            }
-
-            // Strategi fallback 3: Menggunakan pencarian judul film saja
-            if (!match?.poster_path && rec.title) {
-              const data3 = await movieService.search(rec.title, 1);
-              match = data3.results[0] || match;
-            }
-
-            return {
-              ...rec,
-              tmdbId: match?.id || null,
-              poster: match?.poster_path
-                ? `https://image.tmdb.org/t/p/w342${match.poster_path}`
-                : null,
-            };
-          } catch {
-            return { ...rec, tmdbId: null, poster: null };
-          }
-        })
-      );
+      // 2. Enrich dengan poster TMDB (Tanpa duplikasi & tanpa waterfall)
+      const enriched = await enrichWithTmdbPoster(recs);
+      
       setResults(enriched);
       setSearched(true);
     } catch (err) {

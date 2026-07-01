@@ -1,4 +1,10 @@
 const READ_ACCESS_TOKEN = import.meta.env.VITE_TMDB_READ_TOKEN;
+
+if (!READ_ACCESS_TOKEN) {
+  console.error("CRITICAL ERROR: Missing VITE_TMDB_READ_TOKEN environment variable.");
+  throw new Error('Missing VITE_TMDB_READ_TOKEN environment variable. Please check your .env file.');
+}
+
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE = 'https://image.tmdb.org/t/p';
 
@@ -15,16 +21,34 @@ const buildUrl = (path, params = {}) => {
   return url.toString();
 };
 
-const apiFetch = async (url) => {
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${READ_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json;charset=utf-8'
+// 🛡️ Menambahkan timeout handling sebesar 10 detik (10000ms)
+const apiFetch = async (url, { timeoutMs = 10000 } = {}) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${READ_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json;charset=utf-8'
+      }
+    });
+    
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    
+    // Harus di-await di dalam try-block agar catch dapat menangkap error parsing/abort
+    return await res.json();
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.warn(`[Timeout] Request aborted after ${timeoutMs}ms: ${url}`);
+      throw new Error('Request timed out. Please check your internet connection.');
     }
-  });
-  
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+    throw error;
+  } finally {
+    // 🛡️ Membersihkan timer agar tidak memicu memory leak
+    clearTimeout(timeoutId);
+  }
 };
 
 export const movieService = {

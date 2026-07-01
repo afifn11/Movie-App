@@ -212,7 +212,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.newListInput:focus { border-color: var(--color-accent); }
+.newListInput:focus { border-color: var(--color-accent); outline: none; }
+/* 🛡️ Added focus-visible for accessibility */
+.newListInput:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
 .newListInput::placeholder { color: var(--color-text-muted); }
 
 .newListActions {

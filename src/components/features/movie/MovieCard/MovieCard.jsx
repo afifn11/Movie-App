@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import WatchlistButton from '../WatchlistButton/WatchlistButton';
 import styles from './MovieCard.module.css';
 
 const FALLBACK = 'https://placehold.co/400x600/111720/4a5568?text=No+Image';
 
-export default function MovieCard({ id, title, year, type, poster, rating }) {
+function MovieCard({ id, title, year, type, poster, rating }) {
   const [imgSrc, setImgSrc] = useState(poster || FALLBACK);
   const [imgLoaded, setImgLoaded] = useState(false);
 
-  const movie = { id, title, year, type, poster, rating };
+  // 🛡️ Memastikan referensi objek movie stabil agar WatchlistButton tidak re-render sia-sia
+  const movie = useMemo(() => ({ id, title, year, type, poster, rating }), [id, title, year, type, poster, rating]);
 
   return (
     <div className={styles.wrapper}>
@@ -56,3 +57,6 @@ export default function MovieCard({ id, title, year, type, poster, rating }) {
     </div>
   );
 }
+
+// 🛡️ Memoisasi komponen untuk menahan re-render berantai dari parent grid
+export default memo(MovieCard);
