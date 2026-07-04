@@ -1,19 +1,30 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
 
-// Inisialisasi SDK Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+// ─── Env Var Validation (cold-start) ─────────────────────────────────────
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
-// Inisialisasi Supabase Admin Client untuk verifikasi JWT
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!GEMINI_API_KEY) {
+  console.error('[CONFIG ERROR] GEMINI_API_KEY tidak ditemukan di environment variables.');
+}
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('[CONFIG ERROR] SUPABASE_URL / SUPABASE_ANON_KEY tidak ditemukan di environment variables.');
+}
 
-// 🛡️ Basic In-Memory Rate Limiter (Berlaku per serverless instance)
+const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
+const supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
+  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+// ─── Rate Limiter ─────────────────────────────────────────────────────────
 const rateLimitCache = new Map();
-const RATE_LIMIT_WINDOW_MS = 60000; // 1 menit
-const MAX_REQUESTS = 15; // Maksimal 15 request per menit per user
+const RATE_LIMIT_WINDOW_MS = 60000;
+const MAX_REQUESTS = 15;
+const GEMINI_TIMEOUT_MS = 25000;
 
 const sanitize = (str) => {
   return String(str ?? '')
@@ -22,10 +33,40 @@ const sanitize = (str) => {
     .slice(0, 1000);
 };
 
+function withTimeout(promise, ms, label) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`TIMEOUT: ${label} exceeded ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
+}
+
+function extractJsonSafely(rawText) {
+  const stripped = rawText.replace(/```json|```/g, '').trim();
+  const firstBracket = Math.min(
+    ...['[', '{'].map((c) => {
+      const idx = stripped.indexOf(c);
+      return idx === -1 ? Infinity : idx;
+    })
+  );
+  const lastBracket = Math.max(stripped.lastIndexOf(']'), stripped.lastIndexOf('}'));
+
+  if (firstBracket === Infinity || lastBracket === -1 || lastBracket < firstBracket) {
+    throw new Error('AI response does not contain a parseable JSON structure');
+  }
+
+  const candidate = stripped.slice(firstBracket, lastBracket + 1);
+  return JSON.parse(candidate);
+}
+
 export default async function handler(req, res) {
-  // Hanya menerima POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  if (!ai || !supabase) {
+    console.error('[CONFIG ERROR] Handler dipanggil tapi ai/supabase gagal diinisialisasi karena env var hilang.');
+    return res.status(500).json({ error: 'Server misconfiguration. Please contact support.' });
   }
 
   try {
@@ -42,18 +83,16 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 
-    // Rate Limit Check
     const now = Date.now();
     const userRateData = rateLimitCache.get(user.id) || { count: 0, startTime: now };
 
     if (now - userRateData.startTime > RATE_LIMIT_WINDOW_MS) {
-      // Reset window
       userRateData.count = 1;
       userRateData.startTime = now;
     } else {
       userRateData.count += 1;
     }
-    
+
     rateLimitCache.set(user.id, userRateData);
 
     if (userRateData.count > MAX_REQUESTS) {
@@ -61,12 +100,18 @@ export default async function handler(req, res) {
     }
     // ───────────────────────────────────────────────────────────────────
 
-    const { action, payload } = req.body;
+    const { action, payload } = req.body || {};
+    if (!action || !payload || typeof payload !== 'object') {
+      return res.status(400).json({ error: 'Invalid request body: action and payload are required' });
+    }
 
     // ─── 1. Fitur Chat Contekstual ──────────────────────────────────────
     if (action === 'chat') {
       const { movie, question, history = [] } = payload;
-      
+      if (!movie || !question) {
+        return res.status(400).json({ error: 'Invalid payload: movie and question are required' });
+      }
+
       const systemContext = `You are a knowledgeable and enthusiastic film expert assistant for Cinema App.
 The user is currently viewing this movie:
 Title: ${movie.title}
@@ -83,19 +128,29 @@ If asked about spoilers, warn first then answer.`;
         parts: [{ text: sanitize(msg.text) }],
       }));
 
-      const chatSession = model.startChat({
+      const chat = ai.chats.create({
+        model: GEMINI_MODEL,
         history: formattedHistory,
-        systemInstruction: systemContext,
+        config: {
+          systemInstruction: systemContext, // string biasa, SDK baru yang urus formatnya
+        },
       });
 
-      const result = await chatSession.sendMessage(`<user_question>${sanitize(question)}</user_question>`);
-      return res.status(200).json({ result: result.response.text() });
+      const result = await withTimeout(
+        chat.sendMessage({ message: `<user_question>${sanitize(question)}</user_question>` }),
+        GEMINI_TIMEOUT_MS,
+        'chat'
+      );
+      return res.status(200).json({ result: result.text });
     }
 
     // ─── 2. Fitur Enhance Review Assistant ──────────────────────────────
     if (action === 'enhanceReview') {
       const { movieTitle, rating, draftReview, genres } = payload;
-      
+      if (!movieTitle || !draftReview) {
+        return res.status(400).json({ error: 'Invalid payload: movieTitle and draftReview are required' });
+      }
+
       const prompt = `You are a thoughtful film critic mentor helping a user write a better movie review.
 
 Movie: "${movieTitle}"
@@ -113,13 +168,20 @@ Return as plain text, no markdown.
 User's draft review:
 <user_draft>${sanitize(draftReview)}</user_draft>`;
 
-      const result = await model.generateContent(prompt);
-      return res.status(200).json({ result: result.response.text() });
+      const result = await withTimeout(
+        ai.models.generateContent({ model: GEMINI_MODEL, contents: prompt }),
+        GEMINI_TIMEOUT_MS,
+        'enhanceReview'
+      );
+      return res.status(200).json({ result: result.text });
     }
 
     // ─── 3. Fitur Mood-based Discovery ──────────────────────────────────
     if (action === 'getMood') {
       const { mood, timeAvailable, watchedTitles = [] } = payload;
+      if (!mood) {
+        return res.status(400).json({ error: 'Invalid payload: mood is required' });
+      }
       const avoidList = watchedTitles.slice(0, 20).join(', ');
 
       const prompt = `You are a film curator for Cinema App helping a user pick a movie based on their mood.
@@ -147,29 +209,33 @@ Return ONLY a valid JSON array (no markdown, no explanation):
 
 IMPORTANT: "searchQuery" must be the exact English title of the film as it appears on TMDB.`;
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().trim();
-      const cleanJsonText = text.replace(/```json|```/g, '').trim();
-      
-      return res.status(200).json({ result: JSON.parse(cleanJsonText) });
+      const result = await withTimeout(
+        ai.models.generateContent({ model: GEMINI_MODEL, contents: prompt }),
+        GEMINI_TIMEOUT_MS,
+        'getMood'
+      );
+      const text = result.text.trim();
+
+      try {
+        const parsed = extractJsonSafely(text);
+        return res.status(200).json({ result: parsed });
+      } catch (parseErr) {
+        console.error('[getMood] JSON parse failed:', parseErr.message, '| raw:', text.slice(0, 300));
+        return res.status(502).json({ error: 'AI returned an unexpected format. Please try again.' });
+      }
     }
 
     // ─── 4. Fitur Rekomendasi Personal ──────────────────────────────────
     if (action === 'getPersonal') {
-      const { watchlist, reviews, watchHistory } = payload;
-      
+      const { watchlist = [], reviews = [], watchHistory = [] } = payload;
+
       const topRated = reviews
         .filter((r) => r.rating >= 7)
         .map((r) => `${sanitize(r.movie_title)} (rated ${r.rating}/10)`)
         .slice(0, 10);
 
-      const recentlyWatched = watchHistory
-        .slice(0, 8)
-        .map((h) => sanitize(h.movie_title));
-
-      const watchlistTitles = watchlist
-        .slice(0, 8)
-        .map((w) => sanitize(w.movie_title));
+      const recentlyWatched = watchHistory.slice(0, 8).map((h) => sanitize(h.movie_title));
+      const watchlistTitles = watchlist.slice(0, 8).map((w) => sanitize(w.movie_title));
 
       if (topRated.length === 0 && recentlyWatched.length === 0) {
         return res.status(200).json({ result: null });
@@ -197,17 +263,28 @@ Return ONLY a valid JSON array (no markdown, no explanation) with exactly 6 reco
 IMPORTANT: "searchQuery" must be the exact English title of the film as it appears on TMDB.
 Recommend films they likely haven't seen. Avoid obvious mainstream blockbusters unless truly fitting.`;
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().trim();
-      const cleanJsonText = text.replace(/```json|```/g, '').trim();
-      
-      return res.status(200).json({ result: JSON.parse(cleanJsonText) });
+      const result = await withTimeout(
+        ai.models.generateContent({ model: GEMINI_MODEL, contents: prompt }),
+        GEMINI_TIMEOUT_MS,
+        'getPersonal'
+      );
+      const text = result.text.trim();
+
+      try {
+        const parsed = extractJsonSafely(text);
+        return res.status(200).json({ result: parsed });
+      } catch (parseErr) {
+        console.error('[getPersonal] JSON parse failed:', parseErr.message, '| raw:', text.slice(0, 300));
+        return res.status(502).json({ error: 'AI returned an unexpected format. Please try again.' });
+      }
     }
 
     return res.status(400).json({ error: 'Invalid backend action requested' });
   } catch (error) {
+    const isTimeout = error?.message?.startsWith('TIMEOUT');
     console.error('Server Serverless Error:', error);
-    // Menyembunyikan detail stack trace dari client demi keamanan
-    return res.status(500).json({ error: 'AI Service is temporarily unavailable' });
+    return res.status(isTimeout ? 504 : 500).json({
+      error: isTimeout ? 'AI Service took too long to respond. Please try again.' : 'AI Service is temporarily unavailable',
+    });
   }
 }
