@@ -17,8 +17,10 @@ import MovieActions from './MovieActions';
 import MovieCast from './MovieCast';
 
 export default function DetailMovie({ movie, trailerKey, credits, loading, error, onLoginRequired }) {
+  // 🛡️ SEMUA hook harus dipanggil di sini, di atas, SEBELUM early return apa pun.
   const { isAuthenticated } = useAuth();
   const [listModalOpen, setListModalOpen] = useState(false);
+  const [actionError, setActionError] = useState(null);
   const { isInWatchlist, toggleWatchlist } = useWatchlistDB();
   const { markAsWatched, hasWatched } = useWatchHistory();
 
@@ -31,7 +33,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
   const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : '';
   const director = credits?.crew?.find((c) => c.job === 'Director')?.name;
-  
+
   const saved = isInWatchlist(movie.id);
   const watched = hasWatched(movie.id);
 
@@ -40,8 +42,6 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
     type: movie.genres?.[0]?.name || 'Movie',
     poster: posterUrl, rating: rating || 'N/A',
   };
-
-  const [actionError, setActionError] = useState(null);
 
   const handleAuthAction = async (action) => {
     if (!isAuthenticated) { onLoginRequired?.(); return; }
@@ -64,7 +64,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
       )}
 
       <div className={`container ${styles.container}`}>
-        
+
         {/* Kolom Poster Terpisah */}
         <div className={styles.posterCol}>
           <MoviePoster posterUrl={posterUrl} title={movie.title} rating={rating} />
@@ -101,6 +101,8 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
             onAddToList={() => setListModalOpen(true)}
           />
 
+          {actionError && <p className={styles.actionError}>{actionError}</p>}
+
           <AIChatPanel movie={{ ...movie, director }} />
 
           <MovieCast cast={credits?.cast} />
@@ -108,7 +110,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
           <ReviewSection movie={movie} posterUrl={posterUrl} />
         </div>
       </div>
-      
+
       {/* Modal Terpisah */}
       <AddToListModal
         isOpen={listModalOpen}
