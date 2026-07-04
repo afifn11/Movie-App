@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { movieService, transformMovie } from '../services/movieService';
 import { useMovies } from '../context/MoviesContext';
 
@@ -9,6 +9,7 @@ export function useApiMovies(category) {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const hasFetchedRef = useRef({}); // { [category]: true } sekali fetch berhasil dipicu
 
   const fetchers = {
     popular: movieService.getPopular,
@@ -22,11 +23,11 @@ export function useApiMovies(category) {
       setError(null);
       const data = await fetchers[category](pageNum);
       const transformed = data.results.map(transformMovie);
-      
+
       updateCache(category, (currentCacheData) =>
         append ? [...(currentCacheData || []), ...transformed] : transformed
       );
-      
+
       setHasMore(pageNum < data.total_pages);
       setPage(pageNum);
     } catch (err) {
@@ -38,15 +39,19 @@ export function useApiMovies(category) {
     }
   }, [category, updateCache]);
 
-  const loadMore = useCallback(() => {
-    if (!loadingMore && hasMore) fetchMovies(page + 1, true);
-  }, [page, hasMore, loadingMore, fetchMovies]);
-
   useEffect(() => {
-    if (apiCache[category]?.length === 0) {
+    // Hanya fetch SEKALI per kategori per mount siklus, bukan tiap kali
+    // referensi apiCache berubah (mencegah infinite loop saat hasil API kosong).
+    if (hasFetchedRef.current[category]) return;
+    if ((apiCache[category]?.length || 0) === 0) {
+      hasFetchedRef.current[category] = true;
       fetchMovies(1);
     }
   }, [category, fetchMovies, apiCache]);
+
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) fetchMovies(page + 1, true);
+  }, [page, hasMore, loadingMore, fetchMovies]);
 
   return {
     movies: apiCache[category] || [],

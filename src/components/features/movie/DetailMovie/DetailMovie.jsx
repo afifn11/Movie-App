@@ -41,9 +41,17 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
     poster: posterUrl, rating: rating || 'N/A',
   };
 
+  const [actionError, setActionError] = useState(null);
+
   const handleAuthAction = async (action) => {
     if (!isAuthenticated) { onLoginRequired?.(); return; }
-    await action();
+    try {
+      setActionError(null);
+      await action();
+    } catch (err) {
+      console.error('Action failed:', err);
+      setActionError('Something went wrong. Please try again.');
+    }
   };
 
   return (
