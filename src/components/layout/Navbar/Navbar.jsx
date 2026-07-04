@@ -42,10 +42,8 @@ export default function Navbar() {
 
           <Link to="/" className={styles.logo}>
             <span className={styles.logoIcon}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3Z" stroke="currentColor" strokeWidth="2"/>
-                <path d="M7 3V21M17 3V21M1 9H7M17 9H23M1 15H7M17 15H23" stroke="currentColor" strokeWidth="2"/>
-              </svg>
+              {/* 🛡️ Menggunakan PNG Favicon sebagai Logo */}
+              <img src="/netfif-favicon.png" alt="Netfif Cinema Logo" />
             </span>
             <span className={styles.logoText}>Netfif <span className={styles.logoAccent}>Cinema</span></span>
           </Link>
