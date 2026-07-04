@@ -1,32 +1,51 @@
 import { supabase } from './supabase';
 
+const REQUEST_TIMEOUT_MS = 30000;
+
 async function fetchFromBackendAI(action, payload) {
-  // 🛡️ 1. Ambil token sesi pengguna saat ini dari Supabase
   const { data: { session }, error } = await supabase.auth.getSession();
 
-  // 🛡️ 2. Cegah request jika user belum login (menghemat bandwidth dan menghindari 401 log)
   if (error || !session) {
     throw new Error('Authentication required: You must be logged in to use AI features.');
   }
 
   const token = session.access_token;
 
-  // 🛡️ 3. Kirim request dengan header Authorization
-  const response = await fetch('/api/gemini', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}` // Suntikkan token JWT ke sini
-    },
-    body: JSON.stringify({ action, payload }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || 'Failed to fetch AI response');
+  let response;
+  try {
+    response = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action, payload }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
+    throw new Error('Network error: could not reach AI service.');
+  } finally {
+    clearTimeout(timeoutId);
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    // Response bukan JSON valid (misal HTML error page dari platform)
+    throw new Error(`AI service returned an unexpected response (status ${response.status}).`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to fetch AI response');
+  }
+
   return data.result;
 }
 

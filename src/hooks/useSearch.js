@@ -9,6 +9,7 @@ export function useSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const debounceRef = useRef(null);
+  const requestIdRef = useRef(0); // guard untuk membuang response usang
 
   const search = useCallback(async (q, page = 1) => {
     if (!q.trim()) {
@@ -16,26 +17,33 @@ export function useSearch() {
       setTotalPages(0);
       return;
     }
+    const requestId = ++requestIdRef.current;
     try {
       setLoading(true);
       setError(null);
       const data = await movieService.search(q, page);
+
+      // Kalau ada pencarian baru yang sudah jalan setelah ini, buang hasil ini.
+      if (requestId !== requestIdRef.current) return;
+
       const transformed = data.results.map(transformMovie);
       setResults((prev) => page === 1 ? transformed : [...prev, ...transformed]);
       setTotalPages(data.total_pages);
       setCurrentPage(page);
     } catch (err) {
-      setError('Search failed. Please try again.');
-      console.error(err);
+      if (requestId === requestIdRef.current) {
+        setError('Search failed. Please try again.');
+        console.error(err);
+      }
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, []);
 
-  // Debounce query changes
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!query.trim()) {
+      requestIdRef.current++; // batalkan request pending yang mungkin masih jalan
       setResults([]);
       setTotalPages(0);
       setCurrentPage(1);
@@ -56,14 +64,7 @@ export function useSearch() {
   const hasMore = currentPage < totalPages;
 
   return {
-    query,
-    setQuery,
-    results,
-    loading,
-    error,
-    hasMore,
-    loadMore,
-    totalPages,
-    currentPage,
+    query, setQuery, results, loading, error,
+    hasMore, loadMore, totalPages, currentPage,
   };
 }
