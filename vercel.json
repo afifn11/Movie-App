@@ -15,6 +15,17 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/movie/:id(\\d+)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|Twitterbot|WhatsApp|Slackbot|TelegramBot|Discordbot|LinkedInBot|Googlebot|bingbot|Applebot|Pinterest|redditbot|SkypeUriPreview).*"
+        }
+      ],
+      "destination": "/api/share-movie?id=:id"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
