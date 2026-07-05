@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { to: '/explore',           label: 'Explore' },
   { to: '/movie/now-playing', label: 'Now Playing' },
   { to: '/movie/top-rated',   label: 'Top Rated' },
+  { to: '/leaderboard',       label: 'Leaderboard 🏆' },
   { to: '/discover',          label: 'Discover ✨' },
 ];
 

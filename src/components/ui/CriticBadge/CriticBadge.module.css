@@ -1,0 +1,45 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.badgeCompact {
+  font-size: 0.62rem;
+  padding: 0.12rem 0.5rem;
+}
+
+.rankCasual {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.rankEnthusiast {
+  background: rgba(76, 175, 130, 0.12);
+  color: var(--color-green);
+  border: 1px solid rgba(76, 175, 130, 0.25);
+}
+
+.rankCritic {
+  background: rgba(88, 156, 232, 0.12);
+  color: #589ce8;
+  border: 1px solid rgba(88, 156, 232, 0.25);
+}
+
+.rankSenior {
+  background: rgba(180, 120, 232, 0.12);
+  color: #b478e8;
+  border: 1px solid rgba(180, 120, 232, 0.25);
+}
+
+.rankMaster {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+  border: 1px solid rgba(232, 184, 75, 0.35);
+}

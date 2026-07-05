@@ -215,3 +215,236 @@ create policy "Users can manage own filter presets"
   on public.filter_presets for all using (auth.uid() = user_id);
 
 create index if not exists idx_filter_presets_user on public.filter_presets(user_id);
+
+-- ============================================================
+-- FASE C: Gamified Review System
+-- ============================================================
+
+-- ─── Kolom tambahan untuk tracking gamifikasi ────────────────
+
+alter table public.reviews
+  add column if not exists genre_ids integer[];
+
+alter table public.profiles
+  add column if not exists review_count     integer not null default 0,
+  add column if not exists current_streak   integer not null default 0,
+  add column if not exists longest_streak   integer not null default 0,
+  add column if not exists last_review_date date,
+  add column if not exists critic_rank      text not null default 'Casual Viewer';
+
+-- ─── Definisi Badge (data referensi statis) ──────────────────
+
+create table if not exists public.badges (
+  id          text primary key,
+  name        text not null,
+  description text not null,
+  icon        text not null,
+  sort_order  integer not null default 0
+);
+
+insert into public.badges (id, name, description, icon, sort_order) values
+  ('first_take',     'First Take',      'Wrote your very first review',                '🎬', 1),
+  ('genre_explorer',  'Genre Explorer',   'Reviewed movies across 5 different genres',   '🧭', 2),
+  ('streak_7',        'On a Roll',        'Reviewed movies 7 days in a row',              '🔥', 3),
+  ('prolific_critic', 'Prolific Critic',  'Wrote 25 reviews',                             '✍️', 4)
+on conflict (id) do nothing;
+
+-- ─── Badge yang sudah didapat user ───────────────────────────
+
+create table if not exists public.user_badges (
+  id         bigserial primary key,
+  user_id    uuid references public.profiles(id) on delete cascade not null,
+  badge_id   text references public.badges(id) on delete cascade not null,
+  earned_at  timestamptz default now(),
+  unique(user_id, badge_id)
+);
+
+-- ─── Voting "Helpful" untuk review ────────────────────────────
+
+create table if not exists public.review_votes (
+  id         bigserial primary key,
+  review_id  bigint references public.reviews(id) on delete cascade not null,
+  user_id    uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamptz default now(),
+  unique(review_id, user_id)
+);
+
+-- ─── Fungsi hitung Critic Rank berdasarkan jumlah review ─────
+
+create or replace function public.compute_critic_rank(p_review_count integer)
+returns text
+language sql
+immutable
+as $$
+  select case
+    when p_review_count >= 50 then 'Master Critic'
+    when p_review_count >= 25 then 'Senior Critic'
+    when p_review_count >= 10 then 'Critic'
+    when p_review_count >= 3  then 'Film Enthusiast'
+    else 'Casual Viewer'
+  end;
+$$;
+
+-- ─── Trigger: update stats + award badge saat review dibuat ──
+
+create or replace function public.handle_review_insert()
+returns trigger as $$
+declare
+  v_review_count   integer;
+  v_current_streak integer;
+  v_longest_streak integer;
+  v_last_date      date;
+  v_today          date := current_date;
+  v_distinct_genres integer;
+begin
+  select review_count, current_streak, longest_streak, last_review_date
+    into v_review_count, v_current_streak, v_longest_streak, v_last_date
+    from public.profiles where id = new.user_id;
+
+  v_review_count := coalesce(v_review_count, 0) + 1;
+
+  if v_last_date is null then
+    v_current_streak := 1;
+  elsif v_last_date = v_today then
+    v_current_streak := coalesce(v_current_streak, 1);
+  elsif v_last_date = v_today - interval '1 day' then
+    v_current_streak := coalesce(v_current_streak, 0) + 1;
+  else
+    v_current_streak := 1;
+  end if;
+
+  v_longest_streak := greatest(coalesce(v_longest_streak, 0), v_current_streak);
+
+  update public.profiles
+    set review_count     = v_review_count,
+        current_streak   = v_current_streak,
+        longest_streak   = v_longest_streak,
+        last_review_date = v_today,
+        critic_rank      = public.compute_critic_rank(v_review_count)
+    where id = new.user_id;
+
+  -- Badge: First Take
+  if v_review_count = 1 then
+    insert into public.user_badges (user_id, badge_id)
+    values (new.user_id, 'first_take') on conflict do nothing;
+  end if;
+
+  -- Badge: Prolific Critic
+  if v_review_count >= 25 then
+    insert into public.user_badges (user_id, badge_id)
+    values (new.user_id, 'prolific_critic') on conflict do nothing;
+  end if;
+
+  -- Badge: On a Roll (streak 7 hari)
+  if v_current_streak >= 7 then
+    insert into public.user_badges (user_id, badge_id)
+    values (new.user_id, 'streak_7') on conflict do nothing;
+  end if;
+
+  -- Badge: Genre Explorer (5+ genre berbeda)
+  select count(distinct g) into v_distinct_genres
+    from public.reviews r, unnest(r.genre_ids) as g
+    where r.user_id = new.user_id;
+
+  if v_distinct_genres >= 5 then
+    insert into public.user_badges (user_id, badge_id)
+    values (new.user_id, 'genre_explorer') on conflict do nothing;
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_review_created on public.reviews;
+create trigger on_review_created
+  after insert on public.reviews
+  for each row execute procedure public.handle_review_insert();
+
+-- ─── Trigger: sesuaikan stats saat review dihapus ────────────
+
+create or replace function public.handle_review_delete()
+returns trigger as $$
+declare
+  v_review_count integer;
+begin
+  select greatest(coalesce(review_count, 0) - 1, 0) into v_review_count
+    from public.profiles where id = old.user_id;
+
+  update public.profiles
+    set review_count = v_review_count,
+        critic_rank  = public.compute_critic_rank(v_review_count)
+    where id = old.user_id;
+
+  return old;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_review_deleted on public.reviews;
+create trigger on_review_deleted
+  after delete on public.reviews
+  for each row execute procedure public.handle_review_delete();
+
+-- ─── Fungsi Leaderboard (join profiles + badge count) ────────
+
+create or replace function public.get_leaderboard(limit_count integer default 50)
+returns table (
+  id              uuid,
+  full_name       text,
+  avatar_url      text,
+  review_count    integer,
+  critic_rank     text,
+  longest_streak  integer,
+  badge_count     bigint
+)
+language sql
+stable
+as $$
+  select
+    p.id, p.full_name, p.avatar_url, p.review_count,
+    p.critic_rank, p.longest_streak,
+    count(ub.id) as badge_count
+  from public.profiles p
+  left join public.user_badges ub on ub.user_id = p.id
+  where p.review_count > 0
+  group by p.id
+  order by p.review_count desc, p.longest_streak desc
+  limit limit_count;
+$$;
+
+-- ─── RLS ──────────────────────────────────────────────────────
+
+alter table public.badges       enable row level security;
+alter table public.user_badges  enable row level security;
+alter table public.review_votes enable row level security;
+
+create policy "Anyone can view badges"
+  on public.badges for select using (true);
+
+create policy "Anyone can view earned badges"
+  on public.user_badges for select using (true);
+
+-- Badge cuma boleh ditulis lewat trigger (security definer), blokir tulis langsung dari client
+create policy "Block direct badge writes"
+  on public.user_badges for insert with check (false);
+
+create policy "Anyone can view helpful votes"
+  on public.review_votes for select using (true);
+
+create policy "Users can vote on others reviews"
+  on public.review_votes for insert
+  with check (
+    auth.uid() = user_id
+    and not exists (
+      select 1 from public.reviews r where r.id = review_id and r.user_id = auth.uid()
+    )
+  );
+
+create policy "Users can remove own vote"
+  on public.review_votes for delete using (auth.uid() = user_id);
+
+-- ─── Indexes ──────────────────────────────────────────────────
+
+create index if not exists idx_user_badges_user   on public.user_badges(user_id);
+create index if not exists idx_review_votes_review on public.review_votes(review_id);
+create index if not exists idx_review_votes_user   on public.review_votes(user_id);
+create index if not exists idx_profiles_rank       on public.profiles(review_count desc);

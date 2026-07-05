@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { enhanceReview } from '../../../lib/gemini';
 import Button from '../../ui/Button/Button';
 import ShareButton from '../../ui/ShareButton/ShareButton';
+import CriticBadge from '../../ui/CriticBadge/CriticBadge';
 import styles from './ReviewSection.module.css';
 
 const RATINGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -33,9 +34,10 @@ function StarRating({ value, onChange, readonly = false }) {
   );
 }
 
-function ReviewCard({ review, movie }) {
+function ReviewCard({ review, movie, helpfulCount, hasVoted, onToggleHelpful, isOwnReview }) {
   const name = review.profiles?.full_name || 'Anonymous';
   const avatar = review.profiles?.avatar_url;
+  const rank = review.profiles?.critic_rank;
   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
   const date = new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -49,7 +51,10 @@ function ReviewCard({ review, movie }) {
             <span className={styles.reviewInitials}>{initials}</span>
           )}
           <div>
-            <p className={styles.reviewName}>{name}</p>
+            <div className={styles.reviewNameRow}>
+              <p className={styles.reviewName}>{name}</p>
+              <CriticBadge rank={rank} compact />
+            </div>
             <p className={styles.reviewDate}>{date}</p>
           </div>
         </div>
@@ -69,14 +74,30 @@ function ReviewCard({ review, movie }) {
         </div>
       </div>
       {review.content && <p className={styles.reviewContent}>{review.content}</p>}
+
+      {!isOwnReview && (
+        <button
+          type="button"
+          className={`${styles.helpfulBtn} ${hasVoted ? styles.helpfulBtnActive : ''}`}
+          onClick={onToggleHelpful}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill={hasVoted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14Z"/>
+            <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+          </svg>
+          Helpful{helpfulCount > 0 ? ` (${helpfulCount})` : ''}
+        </button>
+      )}
     </div>
   );
 }
 
 export default function ReviewSection({ movie, posterUrl }) {
-  const { user, isAuthenticated } = useAuth();
-  const { reviews, userReview, loading, submitReview, deleteReview, avgRating } = useMovieReviews(movie?.id);
-  
+  const {
+    reviews, userReview, loading, submitReview, deleteReview, avgRating,
+    helpfulCounts, userVotedIds, toggleHelpful,
+  } = useMovieReviews(movie?.id);
+
   // 🛡️ Mengatur nilai inisial murni statis
   const [rating, setRating]     = useState(0);
   const [content, setContent]   = useState('');
@@ -104,6 +125,7 @@ export default function ReviewSection({ movie, posterUrl }) {
         content,
         movieTitle: movie.title,
         posterUrl: posterUrl || movie._localPoster || null,
+        genreIds: movie.genres?.map((g) => g.id) || [],
       });
       setShowForm(false);
     } catch (err) {
@@ -136,6 +158,14 @@ export default function ReviewSection({ movie, posterUrl }) {
       await deleteReview();
     } catch (err) {
       console.error('Delete review failed:', err);
+    }
+  };
+
+  const handleToggleHelpful = async (reviewId) => {
+    try {
+      await toggleHelpful(reviewId);
+    } catch (err) {
+      console.error('Toggle helpful failed:', err);
     }
   };
 
@@ -224,7 +254,17 @@ export default function ReviewSection({ movie, posterUrl }) {
         <p className={styles.emptyText}>No reviews yet. Be the first!</p>
       ) : (
         <div className={styles.reviewsList}>
-          {reviews.map((r) => <ReviewCard key={r.id} review={r} movie={movie} />)}
+          {reviews.map((r) => (
+            <ReviewCard
+              key={r.id}
+              review={r}
+              movie={movie}
+              helpfulCount={helpfulCounts[r.id] || 0}
+              hasVoted={userVotedIds.has(r.id)}
+              isOwnReview={user && r.user_id === user.id}
+              onToggleHelpful={() => handleToggleHelpful(r.id)}
+            />
+          ))}
         </div>
       )}
     </div>

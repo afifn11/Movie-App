@@ -15,6 +15,7 @@ const Lists      = lazy(() => import('./pages/Lists'));
 const ListDetail = lazy(() => import('./pages/ListDetail'));
 const Popular    = lazy(() => import('./pages/movie/Popular'));
 const Explore    = lazy(() => import('./pages/Explore'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 const NowPlaying = lazy(() => import('./pages/movie/NowPlaying'));
 const TopRated   = lazy(() => import('./pages/movie/TopRated'));
 const NotFound   = lazy(() => import('./pages/NotFound'));
@@ -37,6 +38,7 @@ export default function App() {
                 <Route path="/search"            element={<Search />} />
                 <Route path="/discover"          element={<Discover />} />
                 <Route path="/explore"           element={<Explore />} />
+                <Route path="/leaderboard"       element={<Leaderboard />} />
                 <Route path="/watchlist"         element={<Watchlist />} />
                 <Route path="/profile"           element={<Profile />} />
                 <Route path="/lists"             element={<Lists />} />

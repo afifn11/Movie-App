@@ -286,3 +286,36 @@
   align-items: center;
   gap: var(--space-2);
 }
+
+.reviewNameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.helpfulBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: 0.3rem 0.8rem;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.helpfulBtn:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-secondary);
+}
+
+.helpfulBtnActive {
+  background: var(--color-accent-dim);
+  border-color: rgba(232, 184, 75, 0.35);
+  color: var(--color-accent);
+}
