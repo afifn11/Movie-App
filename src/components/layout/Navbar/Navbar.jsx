@@ -42,8 +42,7 @@ export default function Navbar() {
 
           <Link to="/" className={styles.logo}>
             <span className={styles.logoIcon}>
-              {/* 🛡️ Menggunakan PNG Favicon sebagai Logo */}
-              <img src="/netfif-favicon.png" alt="Netfif Cinema Logo" />
+              <img src="/logo.png" alt="Netfif Cinema Logo" width="36" height="36" loading="eager" />
             </span>
             <span className={styles.logoText}>Netfif <span className={styles.logoAccent}>Cinema</span></span>
           </Link>
