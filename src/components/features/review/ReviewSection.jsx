@@ -93,6 +93,7 @@ function ReviewCard({ review, movie, helpfulCount, hasVoted, onToggleHelpful, is
 }
 
 export default function ReviewSection({ movie, posterUrl }) {
+  const { user, isAuthenticated } = useAuth();
   const {
     reviews, userReview, loading, submitReview, deleteReview, avgRating,
     helpfulCounts, userVotedIds, toggleHelpful,
