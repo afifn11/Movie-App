@@ -3,6 +3,12 @@ import Modal from '../../ui/Modal/Modal';
 import { useAuth } from '../../../context/AuthContext';
 import styles from './LoginModal.module.css';
 
+const BENEFITS = [
+  { icon: '🎬', label: 'Track every movie you watch' },
+  { icon: '⭐', label: 'Rate films & write reviews' },
+  { icon: '✨', label: 'Get AI-powered recommendations' },
+];
+
 export default function LoginModal({ isOpen, onClose }) {
   const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -25,26 +31,25 @@ export default function LoginModal({ isOpen, onClose }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
       <div className={styles.container}>
-        {/* Logo */}
-        <div className={styles.logo}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-            <path d="M21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3Z" stroke="currentColor" strokeWidth="2"/>
-            <path d="M7 3V21M17 3V21M1 9H7M17 9H23M1 15H7M17 15H23" stroke="currentColor" strokeWidth="2"/>
-          </svg>
+        <div className={styles.logoWrap}>
+          <img src="/logo.png" alt="" width="48" height="48" className={styles.logoImg} />
         </div>
 
-        <h2 className={styles.title}>Welcome to Cinema</h2>
-        <p className={styles.subtitle}>
-          Sign in to save your watchlist, write reviews, and get AI-powered recommendations.
-        </p>
+        <h2 className={styles.title}>Welcome to Netfif Cinema</h2>
+        <p className={styles.subtitle}>Sign in to unlock the full experience.</p>
+
+        <ul className={styles.benefits}>
+          {BENEFITS.map((b) => (
+            <li key={b.label} className={styles.benefitItem}>
+              <span className={styles.benefitIcon}>{b.icon}</span>
+              {b.label}
+            </li>
+          ))}
+        </ul>
 
         {error && <p className={styles.error}>{error}</p>}
 
-        <button
-          className={styles.googleBtn}
-          onClick={handleGoogle}
-          disabled={loading}
-        >
+        <button className={styles.googleBtn} onClick={handleGoogle} disabled={loading}>
           {loading ? (
             <span className={styles.spinner} />
           ) : (
@@ -59,9 +64,7 @@ export default function LoginModal({ isOpen, onClose }) {
         </button>
 
         <p className={styles.terms}>
-          By signing in, you agree to our{' '}
-          <span className={styles.link}>Terms of Service</span> and{' '}
-          <span className={styles.link}>Privacy Policy</span>.
+          By continuing, you agree to use Netfif Cinema responsibly. Your data only powers your watchlist, reviews, and recommendations.
         </p>
       </div>
     </Modal>

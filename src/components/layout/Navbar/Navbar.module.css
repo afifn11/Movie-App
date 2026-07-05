@@ -28,7 +28,6 @@
   box-shadow: 0 1px 0 var(--color-border);
 }
 
-/* ---- INNER ---- */
 .inner {
   display: flex;
   align-items: center;
@@ -37,16 +36,20 @@
   gap: var(--space-3);
 }
 
-/* ---- LOGO ---- */
 .logo {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   text-decoration: none;
   flex-shrink: 0;
+  border-radius: var(--radius-md);
 }
 
-/* 🛡️ Diperbarui agar mengakomodasi file gambar dengan bersih */
+.logo:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
 .logoIcon {
   display: flex;
   align-items: center;
@@ -85,24 +88,42 @@
 }
 
 .navLink {
+  position: relative;
+  display: flex;
+  align-items: center;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-secondary);
-  transition: color var(--transition-fast), background var(--transition-fast);
+  transition: color var(--transition-fast);
   white-space: nowrap;
 }
 
-.navLink:hover {
-  color: var(--color-text-primary);
-  background: rgba(255,255,255,0.06);
+.navLink span { position: relative; }
+
+.navLink span::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: -6px;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+  transition: left var(--transition-base), right var(--transition-base);
 }
 
-.navLinkActive {
-  color: var(--color-accent) !important;
-  background: var(--color-accent-dim) !important;
+.navLink:hover { color: var(--color-text-primary); }
+.navLink:hover span::after { left: 15%; right: 15%; }
+
+.navLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
+
+.navLinkActive { color: var(--color-text-primary) !important; }
+.navLinkActive span::after { left: 0; right: 0; }
 
 /* ---- ACTIONS ---- */
 .actions {
@@ -111,10 +132,16 @@
   gap: var(--space-2);
 }
 
-/* Icon buttons (search, watchlist) */
+/* Sembunyikan di mobile, tampil mulai breakpoint desktopNav supaya
+   top bar mobile tetap ringkas (cuma Logo + Hamburger). */
+.desktopOnly { display: none !important; }
+
+@media (min-width: 900px) {
+  .desktopOnly { display: flex !important; }
+}
+
 .iconBtn {
   position: relative;
-  display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
@@ -133,7 +160,11 @@
   border-color: var(--color-border);
 }
 
-/* Watchlist badge */
+.iconBtn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .badge {
   position: absolute;
   top: -4px;
@@ -151,31 +182,6 @@
   justify-content: center;
   line-height: 1;
   border: 2px solid var(--color-bg-primary);
-}
-
-/* Add Movie CTA */
-.addBtn {
-  display: none;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  background: var(--color-accent);
-  color: #0a0a0a;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: background var(--transition-fast), transform var(--transition-fast);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.addBtn:hover {
-  background: var(--color-accent-hover);
-  transform: translateY(-1px);
-}
-
-@media (min-width: 640px) {
-  .addBtn { display: flex; }
 }
 
 /* ---- HAMBURGER ---- */
@@ -196,6 +202,11 @@
 }
 
 .hamburger:hover { background: rgba(255,255,255,0.08); }
+
+.hamburger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
 
 @media (min-width: 900px) {
   .hamburger { display: none; }
@@ -225,18 +236,16 @@
   transition: opacity var(--transition-base);
 }
 
-.mobileOverlayOpen {
-  display: block;
-  opacity: 1;
-}
+.mobileOverlayOpen { display: block; opacity: 1; }
 
 /* ---- MOBILE DRAWER ---- */
 .mobileDrawer {
   position: fixed;
   top: 0;
-  right: -300px;
+  right: -320px;
   bottom: 0;
-  width: 300px;
+  width: 320px;
+  max-width: 85vw;
   background: var(--color-bg-secondary);
   border-left: 1px solid var(--color-border);
   z-index: 110;
@@ -253,6 +262,94 @@
   gap: var(--space-1);
   overflow-y: auto;
   height: 100%;
+}
+
+.mobileUserCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast);
+}
+
+.mobileUserCard:hover { border-color: var(--color-border-hover); }
+
+.mobileUserCard:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.mobileUserGreeting {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.mobileUserName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.mobileUserChevron {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+/* Quick Actions row */
+.quickActions {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.quickActionBtn {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.quickActionBtn:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
+.quickActionBtn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.quickActionBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--color-accent);
+  color: #0a0a0a;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-bg-secondary);
 }
 
 .mobileDrawerLabel {
@@ -282,44 +379,39 @@
   background: var(--color-bg-elevated);
 }
 
+.mobileNavLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
 .mobileNavLinkActive {
   color: var(--color-accent) !important;
   background: var(--color-accent-dim) !important;
 }
 
-.mobileBadge {
-  margin-left: auto;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  background: var(--color-accent);
-  color: #0a0a0a;
-  border-radius: var(--radius-full);
-  font-size: 0.7rem;
-  font-weight: 700;
+.mobileSignOutBtn {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.mobileAddBtn {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
+  gap: var(--space-3);
+  width: 100%;
   padding: var(--space-3) var(--space-4);
-  background: var(--color-accent);
-  color: #0a0a0a;
+  margin-top: var(--space-1);
   border-radius: var(--radius-md);
   font-size: 0.95rem;
-  font-weight: 600;
-  justify-content: center;
+  font-weight: 500;
+  color: var(--color-red);
+  background: transparent;
   transition: background var(--transition-fast);
 }
 
-.mobileAddBtn:hover { background: var(--color-accent-hover); }
+.mobileSignOutBtn:hover { background: rgba(229,72,72,0.08); }
 
-/* Sign In button */
+.mobileSignOutBtn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* Sign In button (desktop) */
 .signInBtn {
   padding: var(--space-2) var(--space-4);
   background: var(--color-accent);
@@ -340,11 +432,16 @@
   transform: translateY(-1px);
 }
 
+.signInBtn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .mobileSignIn {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: var(--space-4);
+  margin-bottom: var(--space-5);
   padding: var(--space-3) var(--space-4);
   background: var(--color-accent);
   color: #0a0a0a;
@@ -360,8 +457,13 @@
 
 .mobileSignIn:hover { background: var(--color-accent-hover); }
 
+.mobileSignIn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .mobileDrawerDivider {
   height: 1px;
   background: var(--color-border);
-  margin: var(--space-2) 0;
+  margin: var(--space-3) 0;
 }

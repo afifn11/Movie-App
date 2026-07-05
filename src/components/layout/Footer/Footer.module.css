@@ -1,76 +1,195 @@
 .footer {
   margin-top: var(--space-20);
-  border-top: 1px solid var(--color-border);
   background: var(--color-bg-secondary);
 }
 
-.inner {
+/* ---- Signature: sprocket-hole film strip divider ----
+   Detail otentik dari fisik pita film 35mm — dipilih sebagai satu elemen
+   distinctive footer ini, bukan garis pemisah generik. */
+.sprocket {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  overflow: hidden;
+  background: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sprocketHole {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  opacity: 0.25;
+  flex-shrink: 0;
+}
+
+.inner {
   padding-top: var(--space-12);
-  padding-bottom: var(--space-12);
-  text-align: center;
+  padding-bottom: var(--space-8);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  padding-bottom: var(--space-10);
 }
 
 @media (min-width: 768px) {
-  .inner {
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
-    align-items: flex-start;
+  .grid {
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: var(--space-8);
   }
 }
 
-.brand {
+/* ---- Brand column ---- */
+.brandCol {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-4);
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  border-radius: var(--radius-md);
+}
+
+.logo:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.logoText {
   font-family: var(--font-display);
-  font-size: 1.75rem;
-  letter-spacing: 0.08em;
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
   color: var(--color-text-primary);
 }
 
-.logo span {
-  color: var(--color-accent);
-}
+.logoAccent { color: var(--color-accent); }
 
 .tagline {
   font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 340px;
+}
+
+.credit {
+  font-size: 0.8rem;
   color: var(--color-text-muted);
-  max-width: 240px;
 }
 
-.links {
+.creditLink {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.creditLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Link columns ---- */
+.linkCol {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-2) var(--space-6);
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-@media (min-width: 768px) {
-  .links { flex-direction: column; gap: var(--space-3); }
+.colLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
 }
 
 .link {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   transition: color var(--transition-fast);
+  width: fit-content;
 }
 
 .link:hover { color: var(--color-accent); }
 
+.link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.tmdbAttribution {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.tmdbLogoLink {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  width: fit-content;
+}
+
+.tmdbLogoLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Bottom bar ---- */
+.bottomBar {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 640px) {
+  .bottomBar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
 .copy {
   font-size: 0.8rem;
   color: var(--color-text-muted);
-  align-self: flex-end;
+  text-align: center;
 }
 
-@media (max-width: 767px) {
-  .copy { align-self: center; }
+.backToTop {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.backToTop:hover {
+  color: var(--color-accent);
+  border-color: var(--color-border-hover);
+}
+
+.backToTop:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

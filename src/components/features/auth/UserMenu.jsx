@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import Avatar from '../../ui/Avatar/Avatar';
 import styles from './UserMenu.module.css';
 
 export default function UserMenu() {
@@ -16,7 +17,6 @@ export default function UserMenu() {
 
   const avatar = profile?.avatar_url || user?.user_metadata?.avatar_url;
   const name   = profile?.full_name  || user?.user_metadata?.full_name || 'User';
-  const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <div className={styles.wrapper} ref={ref}>
@@ -26,22 +26,13 @@ export default function UserMenu() {
         aria-label="User menu"
         aria-expanded={open}
       >
-        {avatar ? (
-          <img src={avatar} alt={name} className={styles.avatar} />
-        ) : (
-          <span className={styles.initials}>{initials}</span>
-        )}
+        <Avatar src={avatar} name={name} size={34} />
       </button>
 
       {open && (
         <div className={styles.dropdown}>
-          {/* User info */}
           <div className={styles.userInfo}>
-            {avatar ? (
-              <img src={avatar} alt={name} className={styles.dropdownAvatar} />
-            ) : (
-              <span className={`${styles.initials} ${styles.dropdownInitials}`}>{initials}</span>
-            )}
+            <Avatar src={avatar} name={name} size={40} />
             <div>
               <p className={styles.userName}>{name}</p>
               <p className={styles.userEmail}>{user?.email}</p>

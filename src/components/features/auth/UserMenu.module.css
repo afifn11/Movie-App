@@ -20,24 +20,6 @@
   transform: scale(1.05);
 }
 
-.avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.initials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-accent);
-  background: var(--color-accent-dim);
-}
-
 /* Dropdown */
 .dropdown {
   position: absolute;
@@ -63,22 +45,6 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-4);
-}
-
-.dropdownAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.dropdownInitials {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 0.9rem;
-  flex-shrink: 0;
 }
 
 .userName {

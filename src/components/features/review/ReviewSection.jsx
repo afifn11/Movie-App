@@ -5,6 +5,7 @@ import { enhanceReview } from '../../../lib/gemini';
 import Button from '../../ui/Button/Button';
 import ShareButton from '../../ui/ShareButton/ShareButton';
 import CriticBadge from '../../ui/CriticBadge/CriticBadge';
+import Avatar from '../../ui/Avatar/Avatar';
 import styles from './ReviewSection.module.css';
 
 const RATINGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -38,18 +39,13 @@ function ReviewCard({ review, movie, helpfulCount, hasVoted, onToggleHelpful, is
   const name = review.profiles?.full_name || 'Anonymous';
   const avatar = review.profiles?.avatar_url;
   const rank = review.profiles?.critic_rank;
-  const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
   const date = new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   return (
     <div className={styles.reviewCard}>
       <div className={styles.reviewHeader}>
         <div className={styles.reviewUser}>
-          {avatar ? (
-            <img src={avatar} alt={name} className={styles.reviewAvatar} />
-          ) : (
-            <span className={styles.reviewInitials}>{initials}</span>
-          )}
+          <Avatar src={avatar} name={name} size={36} />
           <div>
             <div className={styles.reviewNameRow}>
               <p className={styles.reviewName}>{name}</p>
