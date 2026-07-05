@@ -68,3 +68,8 @@ export async function getMoodRecommendations({ mood, timeAvailable, watchedTitle
 export async function getPersonalRecommendations({ watchlist, reviews, watchHistory }) {
   return fetchFromBackendAI('getPersonal', { watchlist, reviews, watchHistory });
 }
+
+// ─── 5. Smart Filter (natural language → filter params)
+export async function parseNaturalLanguageFilter(query) {
+  return fetchFromBackendAI('parseFilter', { query, currentYear: new Date().getFullYear() });
+}

@@ -279,6 +279,49 @@ Recommend films they likely haven't seen. Avoid obvious mainstream blockbusters 
       }
     }
 
+    // ─── 5. Fitur Smart Filter (Natural Language → Filter Params) ───────
+    if (action === 'parseFilter') {
+      const { query, currentYear } = payload;
+      if (!query) {
+        return res.status(400).json({ error: 'Invalid payload: query is required' });
+      }
+
+      const prompt = `You are a filter-parsing assistant for a movie discovery app.
+Convert the user's natural language movie request into structured filter parameters.
+
+Available genres (use EXACT id numbers): Action=28, Adventure=12, Animation=16, Comedy=35, Crime=80, Documentary=99, Drama=18, Family=10751, Fantasy=14, History=36, Horror=27, Music=10402, Mystery=9648, Romance=10749, Science Fiction=878, TV Movie=10770, Thriller=53, War=10752, Western=37.
+
+Current year: ${currentYear || new Date().getFullYear()}
+
+User's request:
+<user_request>${sanitize(query)}</user_request>
+
+Return ONLY a valid JSON object (no markdown, no explanation) with this exact shape:
+{
+  "genres": [array of genre id numbers, empty array if none mentioned],
+  "yearFrom": "YYYY string or empty string if not mentioned",
+  "yearTo": "YYYY string or empty string if not mentioned",
+  "minRating": number between 0-9 (0 if not mentioned),
+  "maxRuntime": "minutes as string, or empty string if not mentioned",
+  "sortBy": "one of: popularity.desc, vote_average.desc, primary_release_date.desc, primary_release_date.asc, revenue.desc"
+}`;
+
+      const result = await withTimeout(
+        ai.models.generateContent({ model: GEMINI_MODEL, contents: prompt }),
+        GEMINI_TIMEOUT_MS,
+        'parseFilter'
+      );
+      const text = result.text.trim();
+
+      try {
+        const parsed = extractJsonSafely(text);
+        return res.status(200).json({ result: parsed });
+      } catch (parseErr) {
+        console.error('[parseFilter] JSON parse failed:', parseErr.message, '| raw:', text.slice(0, 300));
+        return res.status(502).json({ error: 'AI returned an unexpected format. Please try again.' });
+      }
+    }
+
     return res.status(400).json({ error: 'Invalid backend action requested' });
   } catch (error) {
     const isTimeout = error?.message?.startsWith('TIMEOUT');

@@ -195,3 +195,23 @@ create index if not exists idx_reviews_movie     on public.reviews(movie_id);
 create index if not exists idx_reviews_user      on public.reviews(user_id);
 create index if not exists idx_list_items_list   on public.list_items(list_id);
 create index if not exists idx_watch_history_user on public.watch_history(user_id);
+
+-- ============================================================
+-- FASE A: Deep Custom Filtering — Saved Filter Presets
+-- ============================================================
+
+create table if not exists public.filter_presets (
+  id          bigserial primary key,
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  name        text not null,
+  params      jsonb not null,
+  created_at  timestamptz default now(),
+  unique(user_id, name)
+);
+
+alter table public.filter_presets enable row level security;
+
+create policy "Users can manage own filter presets"
+  on public.filter_presets for all using (auth.uid() = user_id);
+
+create index if not exists idx_filter_presets_user on public.filter_presets(user_id);

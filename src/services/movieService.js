@@ -62,6 +62,17 @@ export const movieService = {
   getCredits: (id) => apiFetch(buildUrl(`/movie/${id}/credits`)),
   search: (query, page = 1) => apiFetch(buildUrl('/search/movie', { query, page })),
   getGenres: () => apiFetch(buildUrl('/genre/movie/list')),
+
+  // Deep Custom Filtering
+  discover: (filters = {}, page = 1) => {
+    const params = { page, sort_by: filters.sortBy || 'popularity.desc', 'vote_count.gte': 50 };
+    if (filters.genres?.length) params.with_genres = filters.genres.join(',');
+    if (filters.yearFrom) params['primary_release_date.gte'] = `${filters.yearFrom}-01-01`;
+    if (filters.yearTo) params['primary_release_date.lte'] = `${filters.yearTo}-12-31`;
+    if (filters.minRating > 0) params['vote_average.gte'] = filters.minRating;
+    if (filters.maxRuntime) params['with_runtime.lte'] = filters.maxRuntime;
+    return apiFetch(buildUrl('/discover/movie', params));
+  },
 };
 
 export const transformMovie = (movie) => ({

@@ -9,6 +9,7 @@ import styles from './Navbar.module.css';
 const NAV_LINKS = [
   { to: '/',                  label: 'Home',        exact: true },
   { to: '/movie/popular',     label: 'Popular' },
+  { to: '/explore',           label: 'Explore' },
   { to: '/movie/now-playing', label: 'Now Playing' },
   { to: '/movie/top-rated',   label: 'Top Rated' },
   { to: '/discover',          label: 'Discover ✨' },
