@@ -3,6 +3,7 @@ import { useMovieReviews } from '../../../hooks/useReviews';
 import { useAuth } from '../../../context/AuthContext';
 import { enhanceReview } from '../../../lib/gemini';
 import Button from '../../ui/Button/Button';
+import ShareButton from '../../ui/ShareButton/ShareButton';
 import styles from './ReviewSection.module.css';
 
 const RATINGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -32,7 +33,7 @@ function StarRating({ value, onChange, readonly = false }) {
   );
 }
 
-function ReviewCard({ review }) {
+function ReviewCard({ review, movie }) {
   const name = review.profiles?.full_name || 'Anonymous';
   const avatar = review.profiles?.avatar_url;
   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -52,11 +53,19 @@ function ReviewCard({ review }) {
             <p className={styles.reviewDate}>{date}</p>
           </div>
         </div>
-        <div className={styles.reviewRating}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-          </svg>
-          {review.rating}/10
+        <div className={styles.reviewHeaderRight}>
+          <div className={styles.reviewRating}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+            {review.rating}/10
+          </div>
+          <ShareButton
+            compact
+            title={`Review of ${movie.title}`}
+            text={`"${(review.content || '').slice(0, 100)}" — rated ${review.rating}/10 by ${name} on Netfif Cinema`}
+            url={`${window.location.origin}/movie/${movie.id}`}
+          />
         </div>
       </div>
       {review.content && <p className={styles.reviewContent}>{review.content}</p>}
@@ -119,6 +128,14 @@ export default function ReviewSection({ movie, posterUrl }) {
       console.error(err);
     } finally {
       setLoadingHint(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteReview();
+    } catch (err) {
+      console.error('Delete review failed:', err);
     }
   };
 
@@ -185,7 +202,7 @@ export default function ReviewSection({ movie, posterUrl }) {
               {userReview ? 'Update Review' : 'Submit Review'}
             </Button>
             {userReview && (
-              <Button type="button" variant="danger" size="md" onClick={deleteReview}>
+              <Button type="button" variant="danger" size="md" onClick={handleDelete}>
                 Delete
               </Button>
             )}
@@ -207,7 +224,7 @@ export default function ReviewSection({ movie, posterUrl }) {
         <p className={styles.emptyText}>No reviews yet. Be the first!</p>
       ) : (
         <div className={styles.reviewsList}>
-          {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
+          {reviews.map((r) => <ReviewCard key={r.id} review={r} movie={movie} />)}
         </div>
       )}
     </div>

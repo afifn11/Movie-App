@@ -99,6 +99,9 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
             onToggleWatchlist={() => handleAuthAction(() => toggleWatchlist(watchlistMovie))}
             onMarkWatched={() => handleAuthAction(() => markAsWatched(watchlistMovie))}
             onAddToList={() => setListModalOpen(true)}
+            shareTitle={movie.title}
+            shareText={`Check out "${movie.title}"${year ? ` (${year})` : ''} on Netfif Cinema!`}
+            shareUrl={`${window.location.origin}/movie/${movie.id}`}
           />
 
           {actionError && <p className={styles.actionError}>{actionError}</p>}

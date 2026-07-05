@@ -1,0 +1,63 @@
+.wrapper { position: relative; display: inline-block; }
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  height: 48px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.shareBtn:hover { border-color: var(--color-border-hover); color: var(--color-text-primary); }
+.shareBtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.shareBtnCompact {
+  height: 30px;
+  padding: 0 var(--space-2);
+  font-size: 0.75rem;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: popIn 0.12s ease;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.popoverItem {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.popoverItem:hover { background: var(--color-bg-elevated); color: var(--color-text-primary); }
+.popoverItem:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }

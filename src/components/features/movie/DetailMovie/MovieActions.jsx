@@ -1,7 +1,8 @@
 import Button from '../../../ui/Button/Button';
+import ShareButton from '../../../ui/ShareButton/ShareButton';
 import styles from './DetailMovie.module.css';
 
-export default function MovieActions({ trailerKey, saved, watched, imdbId, isAuthenticated, onToggleWatchlist, onMarkWatched, onAddToList }) {
+export default function MovieActions({ trailerKey, saved, watched, imdbId, isAuthenticated, onToggleWatchlist, onMarkWatched, onAddToList, shareTitle, shareText, shareUrl }) {
   return (
     <div className={styles.actions}>
       {trailerKey && (
@@ -49,6 +50,7 @@ export default function MovieActions({ trailerKey, saved, watched, imdbId, isAut
           IMDB
         </Button>
       )}
+      <ShareButton title={shareTitle} text={shareText} url={shareUrl} />
     </div>
   );
 }
