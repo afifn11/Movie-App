@@ -10,9 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@vercel/og": "^0.8.5",
     "@google/genai": "^2.10.0",
     "@supabase/supabase-js": "^2.100.1",
+    "@vercel/og": "^0.8.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.6.0"
