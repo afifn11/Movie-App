@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Sentry } from '../../../lib/sentry';
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -7,13 +8,14 @@ export default class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Memperbarui state sehingga render berikutnya menunjukkan fallback UI.
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Anda bisa menyambungkan ini ke layanan pelaporan error seperti Sentry
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    Sentry.captureException(error, {
+      extra: { componentStack: errorInfo?.componentStack },
+    });
   }
 
   render() {
