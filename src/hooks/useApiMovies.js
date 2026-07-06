@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { movieService, transformMovie } from '../services/movieService';
 import { useMovies } from '../context/MoviesContext';
 
+const fetchers = {
+  popular: movieService.getPopular,
+  nowPlaying: movieService.getNowPlaying,
+  topRated: movieService.getTopRated,
+};
+
 export function useApiMovies(category) {
   const { apiCache, updateCache } = useMovies();
   const [loading, setLoading] = useState(false);
@@ -9,13 +15,7 @@ export function useApiMovies(category) {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const hasFetchedRef = useRef({}); // { [category]: true } sekali fetch berhasil dipicu
-
-  const fetchers = {
-    popular: movieService.getPopular,
-    nowPlaying: movieService.getNowPlaying,
-    topRated: movieService.getTopRated,
-  };
+  const hasFetchedRef = useRef({}); 
 
   const fetchMovies = useCallback(async (pageNum = 1, append = false) => {
     try {
