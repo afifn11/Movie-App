@@ -7,6 +7,7 @@
 ![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=flat-square&logo=supabase)
 ![Gemini](https://img.shields.io/badge/Google-Gemini_AI-4285F4?style=flat-square&logo=google)
 ![Deploy](https://img.shields.io/badge/Deployed-Vercel-000?style=flat-square&logo=vercel)
+![CI](https://github.com/afifn11/Movie-App/actions/workflows/ci.yml/badge.svg)
 
 **Live Demo →** [netfif-cinema.vercel.app](https://netfif-cinema.vercel.app)
 

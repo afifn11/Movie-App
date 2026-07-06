@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMovieLists } from '../hooks/useMovieLists';
-import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button/Button';
 import Modal from '../components/ui/Modal/Modal';
 import { EmptyState } from '../components/ui/StateViews/StateViews';
 import styles from './Lists.module.css';
 
 export default function ListsPage() {
-  const { user } = useAuth();
   const { lists, loading, createList, deleteList } = useMovieLists();
   const [modalOpen, setModalOpen] = useState(false);
   const [name, setName]           = useState('');

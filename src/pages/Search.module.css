@@ -125,3 +125,10 @@
 .empty strong {
   color: var(--color-text-secondary);
 }
+
+.errorMsg {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: var(--space-2);
+}

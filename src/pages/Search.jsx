@@ -48,6 +48,8 @@ export default function SearchPage() {
           )}
         </div>
 
+        {error && <p className={styles.errorMsg}>{error}</p>}
+
         {/* Results */}
         <div className={styles.results}>
           {!query && (
