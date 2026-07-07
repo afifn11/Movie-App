@@ -194,7 +194,9 @@ export default function ReviewSection({ movie, posterUrl }) {
           <p className={styles.formLabel}>Your Rating</p>
           <StarRating value={rating} onChange={setRating} />
 
+          <label htmlFor="reviewContent" className={styles.formLabel}>Your Review</label>
           <textarea
+            id="reviewContent"
             className={styles.textarea}
             maxLength={1000}
             placeholder="Write your thoughts about this film... (max 1000 chars)"

@@ -38,6 +38,7 @@ export default function SearchPage() {
             className={styles.input}
             autoComplete="off"
             spellCheck="false"
+            aria-label="Search for a movie"
           />
           {query && (
             <button className={styles.clearBtn} onClick={() => setQuery('')} aria-label="Clear search">
