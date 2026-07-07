@@ -51,5 +51,48 @@
     "placeholder": "Cari judul film...",
     "clearSearch": "Hapus pencarian",
     "ariaLabel": "Cari judul film"
-  }
+  },
+  "home": {
+    "popularRightNow": "Populer Saat Ini"
+  },
+  "movieGrid": {
+    "loading": "Memuat...",
+    "loadMore": "Muat Lebih Banyak"
+  },
+  "stateViews": {
+    "errorTitle": "Oops!",
+    "errorDefault": "Terjadi kesalahan.",
+    "tryAgain": "Coba Lagi",
+    "emptyDefault": "Film tidak ditemukan.",
+    "loadingDefault": "Memuat..."
+  },
+  "notFound": {
+    "title": "Halaman Tidak Ditemukan",
+    "message": "Halaman yang Anda cari tidak ada atau sudah dipindahkan.",
+    "backHome": "Kembali ke Beranda"
+  },
+  "profile": {
+    "loading": "Memuat profil...",
+    "watchlist": "Daftar Tonton",
+    "watched": "Ditonton",
+    "reviews": "Review",
+    "lists": "Daftar",
+    "avgRating": "Rating Rata-rata",
+    "signOut": "Keluar",
+    "recentReviews": "Review Terbaru",
+    "noReviewsYet": "Belum ada review.",
+    "browseFilms": "Jelajahi film",
+    "recentlyWatched": "Baru Ditonton",
+    "nothingWatchedYet": "Belum ada yang ditonton.",
+    "myLists": "Daftar Saya",
+    "createFirstList": "Buat daftar pertama Anda",
+    "public": "Publik",
+    "watchlistEmpty": "Daftar tonton Anda kosong."
+  },
+  "review": {
+    "yourRating": "Rating Anda",
+    "placeholder": "Tulis pendapat Anda tentang film ini... (maks 1000 karakter)",
+    "loading": "Memuat review...",
+    "noReviewsYet": "Belum ada review. Jadilah yang pertama!"
+   }
 }

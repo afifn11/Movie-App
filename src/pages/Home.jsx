@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Hero from '../components/features/movie/Hero/Hero';
 import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
 import AIRecommendations from '../components/features/ai/AIRecommendations';
@@ -9,6 +10,7 @@ import { useWatchHistory } from '../hooks/useWatchHistory';
 import styles from './Home.module.css';
 
 export default function Home() {
+  const { t } = useTranslation();
   const { movies, loading } = useApiMovies('popular');
   const { isAuthenticated } = useAuth();
   const { watchlist } = useWatchlistDB();
@@ -36,7 +38,7 @@ export default function Home() {
         {/* Popular movies grid */}
         <MovieGrid
           movies={movies}
-          title="Popular Right Now"
+          title={t('home.popularRightNow')}
           loading={loading}
           showGenreFilter
         />

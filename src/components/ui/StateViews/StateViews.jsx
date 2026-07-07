@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import styles from './StateViews.module.css';
 import Button from '../Button/Button';
 
-export function ErrorState({ message = 'Something went wrong.', onRetry }) {
+export function ErrorState({ message, onRetry }) {
+  const { t } = useTranslation();
   return (
     <div className={styles.container}>
       <div className={styles.icon}>
@@ -10,18 +12,19 @@ export function ErrorState({ message = 'Something went wrong.', onRetry }) {
           <path d="M12 7V13M12 16.5V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       </div>
-      <h3 className={styles.title}>Oops!</h3>
-      <p className={styles.message}>{message}</p>
+      <h3 className={styles.title}>{t('stateViews.errorTitle')}</h3>
+      <p className={styles.message}>{message || t('stateViews.errorDefault')}</p>
       {onRetry && (
         <Button variant="secondary" size="md" onClick={onRetry}>
-          Try Again
+          {t('stateViews.tryAgain')}
         </Button>
       )}
     </div>
   );
 }
 
-export function EmptyState({ message = 'No movies found.', icon }) {
+export function EmptyState({ message, icon }) {
+  const { t } = useTranslation();
   return (
     <div className={styles.container}>
       <div className={styles.icon}>
@@ -32,16 +35,17 @@ export function EmptyState({ message = 'No movies found.', icon }) {
           </svg>
         )}
       </div>
-      <p className={styles.message}>{message}</p>
+      <p className={styles.message}>{message || t('stateViews.emptyDefault')}</p>
     </div>
   );
 }
 
-export function PageLoader({ message = 'Loading...' }) {
+export function PageLoader({ message }) {
+  const { t } = useTranslation();
   return (
     <div className={styles.loaderContainer}>
       <div className={styles.loaderSpinner} />
-      <p className={styles.loaderText}>{message}</p>
+      <p className={styles.loaderText}>{message || t('stateViews.loadingDefault')}</p>
     </div>
   );
 }
