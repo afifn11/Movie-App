@@ -149,8 +149,9 @@
 /* ---- Bottom bar ---- */
 .bottomBar {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-4);
   padding-top: var(--space-6);
   border-top: 1px solid var(--color-border);
@@ -193,3 +194,24 @@
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+.legalLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8rem;
+}
+
+.legalLink {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.legalLink:hover { color: var(--color-accent); }
+
+.legalLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.legalDivider { color: var(--color-text-muted); }

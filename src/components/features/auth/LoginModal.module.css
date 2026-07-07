@@ -119,3 +119,8 @@
   color: var(--color-text-muted);
   line-height: 1.6;
 }
+
+.terms a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
