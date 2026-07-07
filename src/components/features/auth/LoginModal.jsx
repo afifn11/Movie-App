@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import Modal from '../../ui/Modal/Modal';
 import { useAuth } from '../../../context/AuthContext';
@@ -64,7 +65,9 @@ export default function LoginModal({ isOpen, onClose }) {
         </button>
 
         <p className={styles.terms}>
-          By continuing, you agree to use Netfif Cinema responsibly. Your data only powers your watchlist, reviews, and recommendations.
+          By continuing, you agree to our{' '}
+          <Link to="/terms" onClick={onClose}>Terms</Link> and{' '}
+          <Link to="/privacy" onClick={onClose}>Privacy Policy</Link>.
         </p>
       </div>
     </Modal>

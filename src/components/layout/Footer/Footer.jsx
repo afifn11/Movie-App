@@ -87,6 +87,11 @@ export default function Footer() {
 
         <div className={styles.bottomBar}>
           <p className={styles.copy}>© {year} Netfif Cinema. All rights reserved.</p>
+          <div className={styles.legalLinks}>
+            <Link to="/terms" className={styles.legalLink}>Terms</Link>
+            <span className={styles.legalDivider}>·</span>
+            <Link to="/privacy" className={styles.legalLink}>Privacy</Link>
+          </div>
           <button
             type="button"
             className={styles.backToTop}
