@@ -3,8 +3,11 @@ import { useUserReviews } from '../hooks/useReviews';
 import { useWatchlistDB } from '../hooks/useWatchlistDB';
 import { useWatchHistory } from '../hooks/useWatchHistory';
 import { useMovieLists } from '../hooks/useMovieLists';
+import { useUserBadges } from '../hooks/useUserBadges';
 import { Link, Navigate } from 'react-router-dom';
 import Button from '../components/ui/Button/Button';
+import Avatar from '../components/ui/Avatar/Avatar';
+import CriticBadge from '../components/ui/CriticBadge/CriticBadge';
 import styles from './Profile.module.css';
 
 const FALLBACK = 'https://placehold.co/40x60/111720/4a5568?text=?';
@@ -32,6 +35,7 @@ export default function ProfilePage() {
   const { watchlist } = useWatchlistDB();
   const { history }   = useWatchHistory();
   const { lists }     = useMovieLists();
+  const { badges: earnedBadges, loading: badgesLoading } = useUserBadges(user?.id);
 
   if (!user && !authLoading) {
     return <Navigate to="/" replace />;
@@ -43,7 +47,6 @@ export default function ProfilePage() {
 
   const name    = profile?.full_name || user?.user_metadata?.full_name || 'User';
   const avatar  = profile?.avatar_url || user?.user_metadata?.avatar_url;
-  const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
   const joined  = user?.created_at
     ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : '';
@@ -59,14 +62,13 @@ export default function ProfilePage() {
         {/* Profile Header */}
         <div className={styles.profileHeader}>
           <div className={styles.avatarWrap}>
-            {avatar ? (
-              <img src={avatar} alt={name} className={styles.avatar} />
-            ) : (
-              <span className={styles.avatarInitials}>{initials}</span>
-            )}
+            <Avatar src={avatar} name={name} size={88} />
           </div>
           <div className={styles.profileInfo}>
-            <h1 className={styles.name}>{name}</h1>
+            <div className={styles.nameRow}>
+              <h1 className={styles.name}>{name}</h1>
+              {profile?.critic_rank && <CriticBadge rank={profile.critic_rank} />}
+            </div>
             <p className={styles.email}>{user?.email}</p>
             {joined && <p className={styles.joined}>Member since {joined}</p>}
             <div className={styles.stats}>
@@ -92,10 +94,38 @@ export default function ProfilePage() {
                   <span className={styles.statLabel}>Avg Rating</span>
                 </div>
               )}
+              {profile?.longest_streak > 1 && (
+                <div className={styles.stat}>
+                  <span className={styles.statNum}>🔥 {profile.longest_streak}</span>
+                  <span className={styles.statLabel}>Best Streak</span>
+                </div>
+              )}
             </div>
             <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
           </div>
         </div>
+
+        {/* Badges Earned */}
+        <section className={styles.card}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Badges Earned</h2>
+            <Link to="/leaderboard" className={styles.cardMore}>Leaderboard →</Link>
+          </div>
+          {badgesLoading ? (
+            <p className={styles.empty}>Loading badges...</p>
+          ) : earnedBadges.length === 0 ? (
+            <p className={styles.empty}>No badges yet. Write your first review to earn one!</p>
+          ) : (
+            <div className={styles.badgeGrid}>
+              {earnedBadges.map((eb) => (
+                <div key={eb.badge_id} className={styles.badgeItem} title={eb.badges?.description}>
+                  <span className={styles.badgeIcon}>{eb.badges?.icon}</span>
+                  <span className={styles.badgeName}>{eb.badges?.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Activity Grid */}
         <div className={styles.activityGrid}>
