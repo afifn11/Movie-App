@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "home": "Home",
+    "popular": "Popular",
+    "explore": "Explore",
+    "nowPlaying": "Now Playing",
+    "topRated": "Top Rated",
+    "leaderboard": "Leaderboard",
+    "discover": "Discover"
+  },
+  "common": {
+    "signIn": "Sign In",
+    "signInGoogle": "Sign In with Google",
+    "signOut": "Sign Out",
+    "backToTop": "Back to top",
+    "skipToContent": "Skip to main content"
+  },
+  "footer": {
+    "tagline": "A personal movie discovery experience — track what you watch, rate what you love, and find your next favorite film.",
+    "builtBy": "Built by",
+    "browse": "Browse",
+    "account": "Account",
+    "about": "About",
+    "myWatchlist": "My Watchlist",
+    "myLists": "My Lists",
+    "myProfile": "My Profile",
+    "aiDiscover": "AI Discover",
+    "tmdbAttribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "allRightsReserved": "All rights reserved.",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "auth": {
+    "welcomeTitle": "Welcome to Netfif Cinema",
+    "welcomeSubtitle": "Sign in to unlock the full experience.",
+    "benefit1": "Track every movie you watch",
+    "benefit2": "Rate films & write reviews",
+    "benefit3": "Get AI-powered recommendations",
+    "continueGoogle": "Continue with Google",
+    "signingIn": "Signing in...",
+    "signInFailed": "Sign in failed. Please try again.",
+    "termsAgreementPrefix": "By continuing, you agree to our",
+    "termsAgreementAnd": "and",
+    "termsAgreementSuffix": ".",
+    "termsLink": "Terms",
+    "privacyLink": "Privacy Policy"
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Find any movie from millions of titles",
+    "placeholder": "Search for a movie...",
+    "clearSearch": "Clear search",
+    "ariaLabel": "Search for a movie"
+  }
+}

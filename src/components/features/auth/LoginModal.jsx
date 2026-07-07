@@ -1,16 +1,15 @@
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import Modal from '../../ui/Modal/Modal';
 import { useAuth } from '../../../context/AuthContext';
 import styles from './LoginModal.module.css';
 
-const BENEFITS = [
-  { icon: '🎬', label: 'Track every movie you watch' },
-  { icon: '⭐', label: 'Rate films & write reviews' },
-  { icon: '✨', label: 'Get AI-powered recommendations' },
-];
+const BENEFIT_ICONS = ['🎬', '⭐', '✨'];
+const BENEFIT_KEYS = ['auth.benefit1', 'auth.benefit2', 'auth.benefit3'];
 
 export default function LoginModal({ isOpen, onClose }) {
+  const { t } = useTranslation();
   const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,7 +21,7 @@ export default function LoginModal({ isOpen, onClose }) {
       await signInWithGoogle();
       onClose();
     } catch (err) {
-      setError('Sign in failed. Please try again.');
+      setError(t('auth.signInFailed'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -36,14 +35,14 @@ export default function LoginModal({ isOpen, onClose }) {
           <img src="/logo.png" alt="" width="48" height="48" className={styles.logoImg} />
         </div>
 
-        <h2 className={styles.title}>Welcome to Netfif Cinema</h2>
-        <p className={styles.subtitle}>Sign in to unlock the full experience.</p>
+        <h2 className={styles.title}>{t('auth.welcomeTitle')}</h2>
+        <p className={styles.subtitle}>{t('auth.welcomeSubtitle')}</p>
 
         <ul className={styles.benefits}>
-          {BENEFITS.map((b) => (
-            <li key={b.label} className={styles.benefitItem}>
-              <span className={styles.benefitIcon}>{b.icon}</span>
-              {b.label}
+          {BENEFIT_KEYS.map((key, i) => (
+            <li key={key} className={styles.benefitItem}>
+              <span className={styles.benefitIcon}>{BENEFIT_ICONS[i]}</span>
+              {t(key)}
             </li>
           ))}
         </ul>
@@ -61,13 +60,15 @@ export default function LoginModal({ isOpen, onClose }) {
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
           )}
-          {loading ? 'Signing in...' : 'Continue with Google'}
+          {loading ? t('auth.signingIn') : t('auth.continueGoogle')}
         </button>
 
         <p className={styles.terms}>
-          By continuing, you agree to our{' '}
-          <Link to="/terms" onClick={onClose}>Terms</Link> and{' '}
-          <Link to="/privacy" onClick={onClose}>Privacy Policy</Link>.
+          {t('auth.termsAgreementPrefix')}{' '}
+          <Link to="/terms" onClick={onClose}>{t('auth.termsLink')}</Link>{' '}
+          {t('auth.termsAgreementAnd')}{' '}
+          <Link to="/privacy" onClick={onClose}>{t('auth.privacyLink')}</Link>
+          {t('auth.termsAgreementSuffix')}
         </p>
       </div>
     </Modal>

@@ -1,10 +1,12 @@
 import { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearch } from '../hooks/useSearch';
 import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
 import { PageLoader } from '../components/ui/StateViews/StateViews';
 import styles from './Search.module.css';
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const { query, setQuery, results, loading, error, hasMore, loadMore } = useSearch();
   const inputRef = useRef(null);
 
@@ -18,9 +20,9 @@ export default function SearchPage() {
         {/* Search Header */}
         <div className={styles.header}>
           <h1 className={styles.title}>
-            <span className={styles.titleAccent}>/</span> Search
+            <span className={styles.titleAccent}>/</span> {t('search.title')}
           </h1>
-          <p className={styles.subtitle}>Find any movie from millions of titles</p>
+          <p className={styles.subtitle}>{t('search.subtitle')}</p>
         </div>
 
         {/* Search Input */}
@@ -34,14 +36,14 @@ export default function SearchPage() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for a movie..."
+            placeholder={t('search.placeholder')}
             className={styles.input}
             autoComplete="off"
             spellCheck="false"
-            aria-label="Search for a movie"
+            aria-label={t('search.ariaLabel')}
           />
           {query && (
-            <button className={styles.clearBtn} onClick={() => setQuery('')} aria-label="Clear search">
+            <button className={styles.clearBtn} onClick={() => setQuery('')} aria-label={t('search.clearSearch')}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
