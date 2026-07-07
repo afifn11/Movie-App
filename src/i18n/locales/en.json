@@ -51,5 +51,48 @@
     "placeholder": "Search for a movie...",
     "clearSearch": "Clear search",
     "ariaLabel": "Search for a movie"
-  }
+  },
+  "home": {
+    "popularRightNow": "Popular Right Now"
+  },
+  "movieGrid": {
+    "loading": "Loading...",
+    "loadMore": "Load More"
+  },
+  "stateViews": {
+    "errorTitle": "Oops!",
+    "errorDefault": "Something went wrong.",
+    "tryAgain": "Try Again",
+    "emptyDefault": "No movies found.",
+    "loadingDefault": "Loading..."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home"
+  },
+  "profile": {
+    "loading": "Loading profile...",
+    "watchlist": "Watchlist",
+    "watched": "Watched",
+    "reviews": "Reviews",
+    "lists": "Lists",
+    "avgRating": "Avg Rating",
+    "signOut": "Sign Out",
+    "recentReviews": "Recent Reviews",
+    "noReviewsYet": "No reviews yet.",
+    "browseFilms": "Browse films",
+    "recentlyWatched": "Recently Watched",
+    "nothingWatchedYet": "Nothing watched yet.",
+    "myLists": "My Lists",
+    "createFirstList": "Create your first list",
+    "public": "Public",
+    "watchlistEmpty": "Your watchlist is empty."
+  },
+  "review": {
+    "yourRating": "Your Rating",
+    "placeholder": "Write your thoughts about this film... (max 1000 chars)",
+    "loading": "Loading reviews...",
+    "noReviewsYet": "No reviews yet. Be the first!"
+   }
 }

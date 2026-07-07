@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { useUserReviews } from '../hooks/useReviews';
 import { useWatchlistDB } from '../hooks/useWatchlistDB';
 import { useWatchHistory } from '../hooks/useWatchHistory';
@@ -30,6 +31,7 @@ function ActivityItem({ to, posterUrl, title, sub }) {
 }
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { profile, user, signOut, loading: authLoading } = useAuth();
   const { reviews }   = useUserReviews();
   const { watchlist } = useWatchlistDB();
@@ -42,7 +44,7 @@ export default function ProfilePage() {
   }
 
   if (authLoading) {
-    return <div className={styles.page}><div className="container">Loading profile...</div></div>;
+    return <div className={styles.page}><div className="container">{t('profile.loading')}</div></div>;
   }
 
   const name    = profile?.full_name || user?.user_metadata?.full_name || 'User';
@@ -74,34 +76,34 @@ export default function ProfilePage() {
             <div className={styles.stats}>
               <div className={styles.stat}>
                 <span className={styles.statNum}>{watchlist.length}</span>
-                <span className={styles.statLabel}>Watchlist</span>
+                <span className={styles.statLabel}>{t('profile.watchlist')}</span>
               </div>
               <div className={styles.stat}>
                 <span className={styles.statNum}>{history.length}</span>
-                <span className={styles.statLabel}>Watched</span>
+                <span className={styles.statLabel}>{t('profile.watched')}</span>
               </div>
               <div className={styles.stat}>
                 <span className={styles.statNum}>{reviews.length}</span>
-                <span className={styles.statLabel}>Reviews</span>
+                <span className={styles.statLabel}>{t('profile.reviews')}</span>
               </div>
               <div className={styles.stat}>
                 <span className={styles.statNum}>{lists.length}</span>
-                <span className={styles.statLabel}>Lists</span>
+                <span className={styles.statLabel}>{t('profile.lists')}</span>
               </div>
               {avgRating && (
                 <div className={styles.stat}>
                   <span className={`${styles.statNum} ${styles.statGold}`}>⭐ {avgRating}</span>
-                  <span className={styles.statLabel}>Avg Rating</span>
+                  <span className={styles.statLabel}>{t('profile.avgRating')}</span>
                 </div>
               )}
               {profile?.longest_streak > 1 && (
                 <div className={styles.stat}>
                   <span className={styles.statNum}>🔥 {profile.longest_streak}</span>
-                  <span className={styles.statLabel}>Best Streak</span>
+                  <span className={styles.statLabel}>{t('profile.bestStreak')}</span>
                 </div>
               )}
             </div>
-            <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
+            <Button variant="ghost" size="sm" onClick={signOut}>{t('profile.signOut')}</Button>
           </div>
         </div>
 
@@ -133,10 +135,10 @@ export default function ProfilePage() {
           {/* Recent Reviews */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Recent Reviews</h2>
+              <h2 className={styles.cardTitle}>{t('profile.recentReviews')}</h2>
             </div>
             {reviews.length === 0 ? (
-              <p className={styles.empty}>No reviews yet. <Link to="/" className={styles.emptyLink}>Browse films</Link></p>
+              <p className={styles.empty}>{t('profile.noReviewsYet')} <Link to="/" className={styles.emptyLink}>{t('profile.browseFilms')}</Link></p>
             ) : (
               <div className={styles.activityList}>
                 {reviews.slice(0, 6).map((r) => (
@@ -152,10 +154,10 @@ export default function ProfilePage() {
           {/* Recently Watched */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Recently Watched</h2>
+              <h2 className={styles.cardTitle}>{t('profile.recentlyWatched')}</h2>
             </div>
             {history.length === 0 ? (
-              <p className={styles.empty}>Nothing watched yet.</p>
+              <p className={styles.empty}>{t('profile.nothingWatchedYet')}</p>
             ) : (
               <div className={styles.activityList}>
                 {history.slice(0, 6).map((h) => (
@@ -171,18 +173,18 @@ export default function ProfilePage() {
           {/* My Lists */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>My Lists</h2>
+              <h2 className={styles.cardTitle}>{t('profile.myLists')}</h2>
               <Link to="/lists" className={styles.cardMore}>Manage →</Link>
             </div>
             {lists.length === 0 ? (
-              <p className={styles.empty}><Link to="/lists" className={styles.emptyLink}>Create your first list</Link></p>
+              <p className={styles.empty}><Link to="/lists" className={styles.emptyLink}>{t('profile.createFirstList')}</Link></p>
             ) : (
               <div className={styles.listCards}>
                 {lists.slice(0, 4).map((l) => (
                   <Link key={l.id} to={`/lists/${l.id}`} className={styles.listCard}>
                     <div className={styles.listCardTop}>
                       <span className={styles.listName}>{l.name}</span>
-                      {l.is_public && <span className={styles.publicTag}>Public</span>}
+                      {l.is_public && <span className={styles.publicTag}>{t('profile.public')}</span>}
                     </div>
                     <span className={styles.listCount}>{l.list_items?.[0]?.count ?? 0} films</span>
                   </Link>
@@ -194,11 +196,11 @@ export default function ProfilePage() {
           {/* Watchlist preview */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Watchlist</h2>
+              <h2 className={styles.cardTitle}>{t('profile.watchlist')}</h2>
               <Link to="/watchlist" className={styles.cardMore}>See all →</Link>
             </div>
             {watchlist.length === 0 ? (
-              <p className={styles.empty}>Your watchlist is empty.</p>
+              <p className={styles.empty}>{t('profile.watchlistEmpty')}</p>
             ) : (
               <div className={styles.posterStrip}>
                 {watchlist.slice(0, 8).map((w) => (

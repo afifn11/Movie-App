@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useMovieReviews } from '../../../hooks/useReviews';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { enhanceReview } from '../../../lib/gemini';
 import Button from '../../ui/Button/Button';
@@ -89,6 +90,7 @@ function ReviewCard({ review, movie, helpfulCount, hasVoted, onToggleHelpful, is
 }
 
 export default function ReviewSection({ movie, posterUrl }) {
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
   const {
     reviews, userReview, loading, submitReview, deleteReview, avgRating,
@@ -191,7 +193,7 @@ export default function ReviewSection({ movie, posterUrl }) {
       {/* Write Review Form */}
       {isAuthenticated && (showForm || userReview) && (
         <form onSubmit={handleSubmit} className={styles.form}>
-          <p className={styles.formLabel}>Your Rating</p>
+          <p className={styles.formLabel}>{t('review.yourRating')}</p>
           <StarRating value={rating} onChange={setRating} />
 
           <label htmlFor="reviewContent" className={styles.formLabel}>Your Review</label>
@@ -199,7 +201,7 @@ export default function ReviewSection({ movie, posterUrl }) {
             id="reviewContent"
             className={styles.textarea}
             maxLength={1000}
-            placeholder="Write your thoughts about this film... (max 1000 chars)"
+            placeholder={t('review.placeholder')}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={4}
@@ -248,9 +250,9 @@ export default function ReviewSection({ movie, posterUrl }) {
 
       {/* Reviews List */}
       {loading ? (
-        <p className={styles.loadingText}>Loading reviews...</p>
+        <p className={styles.loadingText}>{t('review.loading')}</p>
       ) : reviews.length === 0 ? (
-        <p className={styles.emptyText}>No reviews yet. Be the first!</p>
+        <p className={styles.emptyText}>{t('review.noReviewsYet')}</p>
       ) : (
         <div className={styles.reviewsList}>
           {reviews.map((r) => (

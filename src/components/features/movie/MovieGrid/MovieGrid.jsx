@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import MovieCard from '../MovieCard/MovieCard';
+import { useTranslation } from 'react-i18next';
 import GenreFilter from '../GenreFilter/GenreFilter';
 import { MovieCardSkeleton } from '../../../ui/Skeleton/Skeleton';
 import { EmptyState } from '../../../ui/StateViews/StateViews';
@@ -40,6 +41,8 @@ export default function MovieGrid({
         m.type === genres.find((g) => g.id === activeGenre)?.name
       )
     : movies;
+  
+    const { t } = useTranslation(); 
 
   return (
     <section className={styles.section}>
@@ -100,7 +103,7 @@ export default function MovieGrid({
                 onClick={onLoadMore}
                 loading={loadingMore}
               >
-                {loadingMore ? 'Loading...' : 'Load More'}
+                {loadingMore ? t('movieGrid.loading') : t('movieGrid.loadMore')}
               </Button>
             </div>
           )}
