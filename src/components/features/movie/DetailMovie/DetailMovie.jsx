@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { PageLoader, ErrorState } from '../../../ui/StateViews/StateViews';
+import { ErrorState } from '../../../ui/StateViews/StateViews';
+import { DetailSkeleton } from '../../../ui/Skeleton/Skeleton';
 import { IMG } from '../../../../services/movieService';
 import { useWatchlistDB } from '../../../../hooks/useWatchlistDB';
 import { useWatchHistory } from '../../../../hooks/useWatchHistory';
@@ -24,7 +25,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
   const { isInWatchlist, toggleWatchlist } = useWatchlistDB();
   const { markAsWatched, hasWatched } = useWatchHistory();
 
-  if (loading) return <PageLoader message="Loading movie details..." />;
+  if (loading) return <div className="container"><DetailSkeleton /></div>;
   if (error || !movie) return <ErrorState message={error || 'Movie not found.'} />;
 
   const posterUrl = movie._localPoster || IMG.poster(movie.poster_path);

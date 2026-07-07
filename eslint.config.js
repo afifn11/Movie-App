@@ -7,7 +7,7 @@ export default [
   { ignores: ['dist'] },
   {
     files: ['**/*.{js,jsx}'],
-    ignores: ['api/**/*.js', 'playwright.config.js', 'vitest.config.js'],
+    ignores: ['api/**/*.js', 'playwright.config.js', 'vitest.config.js', 'vite.config.js'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -32,7 +32,7 @@ export default [
     },
   },
   {
-    files: ['api/**/*.js', 'playwright.config.js', 'vitest.config.js'],
+    files: ['api/**/*.js', 'playwright.config.js', 'vitest.config.js', 'vite.config.js'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.node,
