@@ -6,9 +6,10 @@ import styles from './AppLayout.module.css';
 export default function AppLayout({ children }) {
   return (
     <div className={styles.wrapper}>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
-      <main className={styles.main}>
+      <main id="main-content" className={styles.main}>
         {children}
       </main>
       <Footer />
