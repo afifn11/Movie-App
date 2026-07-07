@@ -2,22 +2,25 @@ import UserMenu from '../../features/auth/UserMenu';
 import LoginModal from '../../features/auth/LoginModal';
 import Avatar from '../../ui/Avatar/Avatar';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import LanguageSwitcher from '../../ui/LanguageSwitcher/LanguageSwitcher';
 
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
-  { to: '/',                  label: 'Home',        exact: true },
-  { to: '/movie/popular',     label: 'Popular' },
-  { to: '/explore',           label: 'Explore' },
-  { to: '/movie/now-playing', label: 'Now Playing' },
-  { to: '/movie/top-rated',   label: 'Top Rated' },
-  { to: '/leaderboard',       label: 'Leaderboard' },
-  { to: '/discover',          label: 'Discover ✨' },
+  { to: '/',                  key: 'nav.home',       exact: true },
+  { to: '/movie/popular',     key: 'nav.popular' },
+  { to: '/explore',           key: 'nav.explore' },
+  { to: '/movie/now-playing', key: 'nav.nowPlaying' },
+  { to: '/movie/top-rated',   key: 'nav.topRated' },
+  { to: '/leaderboard',       key: 'nav.leaderboard' },
+  { to: '/discover',          key: 'nav.discover', suffix: ' ✨' },
 ];
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen]   = useState(false);
   const [scrolled, setScrolled]   = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -54,17 +57,18 @@ export default function Navbar() {
           </Link>
 
           <nav className={styles.desktopNav}>
-            {NAV_LINKS.map(({ to, label, exact }) => (
+            {NAV_LINKS.map(({ to, key, exact, suffix }) => (
               <NavLink key={to} to={to} end={exact}
                 className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
               >
-                <span>{label}</span>
+                <span>{t(key)}{suffix || ''}</span>
               </NavLink>
             ))}
           </nav>
 
           <div className={styles.actions}>
             {/* Search & Watchlist: cuma tampil di desktop. Di mobile dipindah ke Quick Actions dalam drawer. */}
+            <LanguageSwitcher />
             <Link to="/search" className={`${styles.iconBtn} ${styles.desktopOnly}`} title="Search" aria-label="Search">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
@@ -84,7 +88,7 @@ export default function Navbar() {
             <div className={styles.desktopOnly}>
               {isAuthenticated ? <UserMenu /> : (
                 <button className={styles.signInBtn} onClick={() => setLoginOpen(true)}>
-                  Sign In
+                  {t('common.signIn')}
                 </button>
               )}
             </div>
@@ -119,9 +123,13 @@ export default function Navbar() {
             </Link>
           ) : (
             <button className={styles.mobileSignIn} onClick={() => { setMenuOpen(false); setLoginOpen(true); }}>
-              Sign In with Google
+              {t('common.signInGoogle')}
             </button>
           )}
+
+          <div className={styles.mobileLangRow}>
+            <LanguageSwitcher />
+          </div>
 
           {/* Quick Actions: Search & Watchlist, satu tap, tanpa menyesaki top bar */}
           <div className={styles.quickActions}>
@@ -142,10 +150,10 @@ export default function Navbar() {
           </div>
 
           <p className={styles.mobileDrawerLabel}>Navigation</p>
-          {NAV_LINKS.map(({ to, label, exact }) => (
+          {NAV_LINKS.map(({ to, key, exact, suffix }) => (
             <NavLink key={to} to={to} end={exact}
               className={({ isActive }) => `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}
-            >{label}</NavLink>
+            >{t(key)}{suffix || ''}</NavLink>
           ))}
 
           {isAuthenticated && (
@@ -161,7 +169,7 @@ export default function Navbar() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                Sign Out
+                {t('common.signOut')}
               </button>
             </>
           )}

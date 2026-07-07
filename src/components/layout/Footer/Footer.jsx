@@ -1,19 +1,20 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './Footer.module.css';
 
 const BROWSE_LINKS = [
-  { to: '/movie/popular',     label: 'Popular' },
-  { to: '/movie/now-playing', label: 'Now Playing' },
-  { to: '/movie/top-rated',   label: 'Top Rated' },
-  { to: '/explore',           label: 'Explore' },
-  { to: '/discover',          label: 'AI Discover' },
-  { to: '/leaderboard',       label: 'Leaderboard' },
+  { to: '/movie/popular',     key: 'nav.popular' },
+  { to: '/movie/now-playing', key: 'nav.nowPlaying' },
+  { to: '/movie/top-rated',   key: 'nav.topRated' },
+  { to: '/explore',           key: 'nav.explore' },
+  { to: '/discover',          key: 'footer.aiDiscover' },
+  { to: '/leaderboard',       key: 'nav.leaderboard' },
 ];
 
 const ACCOUNT_LINKS = [
-  { to: '/watchlist', label: 'My Watchlist' },
-  { to: '/lists',     label: 'My Lists' },
-  { to: '/profile',   label: 'My Profile' },
+  { to: '/watchlist', key: 'footer.myWatchlist' },
+  { to: '/lists',     key: 'footer.myLists' },
+  { to: '/profile',   key: 'footer.myProfile' },
 ];
 
 function SprocketDivider() {
@@ -26,6 +27,7 @@ function SprocketDivider() {
 }
 
 export default function Footer() {
+  const { t } = useTranslation();
   const year = new Date().getFullYear();
 
   return (
@@ -42,10 +44,10 @@ export default function Footer() {
               <span className={styles.logoText}>Netfif <span className={styles.logoAccent}>Cinema</span></span>
             </Link>
             <p className={styles.tagline}>
-              A personal movie discovery experience — track what you watch, rate what you love, and find your next favorite film.
+              {t('footer.tagline')}
             </p>
             <p className={styles.credit}>
-              Built by{' '}
+              {t('footer.builtBy')}{' '}
               <a href="https://mafif.my.id" target="_blank" rel="noopener noreferrer" className={styles.creditLink}>
                 Muhammad Afif Naufal
               </a>
@@ -54,25 +56,25 @@ export default function Footer() {
 
           {/* Browse */}
           <div className={styles.linkCol}>
-            <p className={styles.colLabel}>Browse</p>
-            {BROWSE_LINKS.map(({ to, label }) => (
-              <Link key={to} to={to} className={styles.link}>{label}</Link>
+            <p className={styles.colLabel}>{t('footer.browse')}</p>
+            {BROWSE_LINKS.map(({ to, key }) => (
+              <Link key={to} to={to} className={styles.link}>{t(key)}</Link>
             ))}
           </div>
 
           {/* Account */}
           <div className={styles.linkCol}>
-            <p className={styles.colLabel}>Account</p>
-            {ACCOUNT_LINKS.map(({ to, label }) => (
-              <Link key={to} to={to} className={styles.link}>{label}</Link>
+            <p className={styles.colLabel}>{t('footer.account')}</p>
+            {ACCOUNT_LINKS.map(({ to, key }) => (
+              <Link key={to} to={to} className={styles.link}>{t(key)}</Link>
             ))}
           </div>
 
           {/* Legal & Attribution */}
           <div className={styles.linkCol}>
-            <p className={styles.colLabel}>About</p>
+            <p className={styles.colLabel}>{t('footer.about')}</p>
             <p className={styles.tmdbAttribution}>
-              This product uses the TMDB API but is not endorsed or certified by TMDB.
+              {t('footer.tmdbAttribution')}
             </p>
             <a
               href="https://www.themoviedb.org/"
@@ -86,11 +88,11 @@ export default function Footer() {
         </div>
 
         <div className={styles.bottomBar}>
-          <p className={styles.copy}>© {year} Netfif Cinema. All rights reserved.</p>
+          <p className={styles.copy}>© {year} Netfif Cinema. {t('footer.allRightsReserved')}</p>
           <div className={styles.legalLinks}>
-            <Link to="/terms" className={styles.legalLink}>Terms</Link>
+            <Link to="/terms" className={styles.legalLink}>{t('footer.terms')}</Link>
             <span className={styles.legalDivider}>·</span>
-            <Link to="/privacy" className={styles.legalLink}>Privacy</Link>
+            <Link to="/privacy" className={styles.legalLink}>{t('footer.privacy')}</Link>
           </div>
           <button
             type="button"
@@ -101,7 +103,7 @@ export default function Footer() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Back to top
+            {t('common.backToTop')}
           </button>
         </div>
       </div>

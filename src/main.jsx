@@ -8,6 +8,7 @@ import {
   matchRoutes,
 } from 'react-router-dom';
 import './styles/globals.css';
+import './i18n';
 import App from './App';
 import { initSentry } from './lib/sentry';
 

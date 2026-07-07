@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "popular": "Populer",
+    "explore": "Jelajahi",
+    "nowPlaying": "Sedang Tayang",
+    "topRated": "Rating Tertinggi",
+    "leaderboard": "Papan Peringkat",
+    "discover": "Temukan"
+  },
+  "common": {
+    "signIn": "Masuk",
+    "signInGoogle": "Masuk dengan Google",
+    "signOut": "Keluar",
+    "backToTop": "Kembali ke atas",
+    "skipToContent": "Langsung ke konten utama"
+  },
+  "footer": {
+    "tagline": "Pengalaman menemukan film pribadi Anda — lacak yang Anda tonton, beri rating yang Anda suka, dan temukan film favorit berikutnya.",
+    "builtBy": "Dibuat oleh",
+    "browse": "Jelajahi",
+    "account": "Akun",
+    "about": "Tentang",
+    "myWatchlist": "Daftar Tonton Saya",
+    "myLists": "Daftar Saya",
+    "myProfile": "Profil Saya",
+    "aiDiscover": "Temukan dengan AI",
+    "tmdbAttribution": "Produk ini menggunakan TMDB API namun tidak didukung atau disertifikasi oleh TMDB.",
+    "allRightsReserved": "Seluruh hak cipta dilindungi.",
+    "terms": "Ketentuan",
+    "privacy": "Privasi"
+  },
+  "auth": {
+    "welcomeTitle": "Selamat Datang di Netfif Cinema",
+    "welcomeSubtitle": "Masuk untuk membuka pengalaman lengkap.",
+    "benefit1": "Lacak setiap film yang Anda tonton",
+    "benefit2": "Beri rating & tulis review film",
+    "benefit3": "Dapatkan rekomendasi bertenaga AI",
+    "continueGoogle": "Lanjutkan dengan Google",
+    "signingIn": "Sedang masuk...",
+    "signInFailed": "Gagal masuk. Silakan coba lagi.",
+    "termsAgreementPrefix": "Dengan melanjutkan, Anda menyetujui",
+    "termsAgreementAnd": "dan",
+    "termsAgreementSuffix": " kami.",
+    "termsLink": "Ketentuan",
+    "privacyLink": "Kebijakan Privasi"
+  },
+  "search": {
+    "title": "Cari",
+    "subtitle": "Temukan film apa pun dari jutaan judul",
+    "placeholder": "Cari judul film...",
+    "clearSearch": "Hapus pencarian",
+    "ariaLabel": "Cari judul film"
+  }
+}

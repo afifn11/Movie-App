@@ -467,3 +467,9 @@
   background: var(--color-border);
   margin: var(--space-3) 0;
 }
+
+.mobileLangRow {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: var(--space-5);
+}
