@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import CriticBadge from '../components/ui/CriticBadge/CriticBadge';
+import Avatar from '../components/ui/Avatar/Avatar';
 import { PageLoader, ErrorState } from '../components/ui/StateViews/StateViews';
 import styles from './Leaderboard.module.css';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
 export default function Leaderboard() {
+  const { t } = useTranslation();
   const { entries, loading, error } = useLeaderboard(50);
 
   if (loading) return <PageLoader message="Loading leaderboard..." />;
@@ -15,35 +18,30 @@ export default function Leaderboard() {
   return (
     <div className={`container ${styles.page}`}>
       <h1 className={styles.heading}>Top Critics</h1>
-      <p className={styles.subheading}>Ranked by total reviews written on Netfif Cinema.</p>
+      <p className={styles.empty}>{t('leaderboard.empty')}</p>
 
       {entries.length === 0 ? (
         <p className={styles.empty}>No reviews yet. Be the first to climb the leaderboard!</p>
       ) : (
         <div className={styles.list}>
           {entries.map((entry, index) => {
-            const initials = (entry.full_name || 'A').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
             return (
               <div key={entry.id} className={styles.row}>
                 <div className={styles.rank}>
                   {index < 3 ? MEDALS[index] : `#${index + 1}`}
                 </div>
 
-                {entry.avatar_url ? (
-                  <img src={entry.avatar_url} alt={entry.full_name} className={styles.avatar} />
-                ) : (
-                  <span className={styles.initials}>{initials}</span>
-                )}
+                <Avatar src={entry.avatar_url} name={entry.full_name || t('leaderboard.anonymous')} size={44} />
 
                 <div className={styles.info}>
                   <div className={styles.nameRow}>
-                    <span className={styles.name}>{entry.full_name || 'Anonymous'}</span>
+                    <span className={styles.name}>{entry.full_name || t('leaderboard.anonymous')}</span>
                     <CriticBadge rank={entry.critic_rank} compact />
                   </div>
                   <div className={styles.stats}>
-                    {entry.review_count} review{entry.review_count !== 1 ? 's' : ''}
-                    {entry.longest_streak > 1 && ` · 🔥 ${entry.longest_streak} day streak`}
-                    {entry.badge_count > 0 && ` · 🏅 ${entry.badge_count} badge${entry.badge_count !== 1 ? 's' : ''}`}
+                    {t('leaderboard.review', { count: entry.review_count })}
+                    {entry.longest_streak > 1 && ` · ${t('leaderboard.streakDays', { count: entry.longest_streak })}`}
+                    {entry.badge_count > 0 && ` · ${t('leaderboard.badge', { count: entry.badge_count })}`}
                   </div>
                 </div>
               </div>
@@ -53,7 +51,7 @@ export default function Leaderboard() {
       )}
 
       <p className={styles.footerNote}>
-        Want to climb the ranks? <Link to="/">Find a movie to review</Link>.
+        {t('leaderboard.footerNote')} <Link to="/">{t('leaderboard.findMovie')}</Link>.
       </p>
     </div>
   );
