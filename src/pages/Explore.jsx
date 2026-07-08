@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMovieFilters } from '../hooks/useMovieFilters';
 import { useDiscoverMovies } from '../hooks/useDiscoverMovies';
 import { useFilterPresets } from '../hooks/useFilterPresets';
@@ -11,6 +12,7 @@ import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
 import styles from './Explore.module.css';
 
 export default function Explore() {
+  const { t } = useTranslation();
   const { filters, setFilters, clearFilters, hasActiveFilters } = useMovieFilters();
   const { movies, loading, loadingMore, error, hasMore, loadMore } = useDiscoverMovies(filters);
   const { isAuthenticated } = useAuth();
@@ -41,8 +43,8 @@ export default function Explore() {
 
   return (
     <div className={`container ${styles.page}`}>
-      <h1 className={styles.heading}>Explore Movies</h1>
-      <p className={styles.subheading}>Find exactly what you want to watch.</p>
+      <h1 className={styles.heading}>{t('explore.heading')}</h1>
+      <p className={styles.subheading}>{t('explore.subheading')}</p>
 
       <NaturalLanguageFilter onApply={(parsed) => setFilters(parsed)} />
 
@@ -59,10 +61,10 @@ export default function Explore() {
           {isAuthenticated && (
             <div className={styles.presetsBlock}>
               <div className={styles.presetsHeader}>
-                <span className={styles.label}>Saved Filters</span>
+                <span className={styles.label}>{t('explore.savedFilters')}</span>
                 {hasActiveFilters && (
                   <button className={styles.presetAddBtn} onClick={() => setSaveOpen((v) => !v)}>
-                    + Save current
+                    {t('explore.saveCurrent')}
                   </button>
                 )}
               </div>
@@ -71,17 +73,17 @@ export default function Explore() {
                 <form className={styles.presetForm} onSubmit={handleSavePreset}>
                   <input
                     className={styles.presetInput}
-                    placeholder="Preset name"
+                    placeholder={t('explore.presetNamePlaceholder')}
                     value={presetName}
                     onChange={(e) => setPresetName(e.target.value)}
                     maxLength={40}
                   />
-                  <button type="submit" className={styles.presetSaveBtn}>Save</button>
+                  <button type="submit" className={styles.presetSaveBtn}>{t('explore.save')}</button>
                 </form>
               )}
 
               {presets.length === 0 ? (
-                <p className={styles.presetEmpty}>No saved filters yet.</p>
+                <p className={styles.presetEmpty}>{t('explore.noSavedFilters')}</p>
               ) : (
                 <ul className={styles.presetList}>
                   {presets.map((p) => (
@@ -91,7 +93,7 @@ export default function Explore() {
                       </button>
                       <button
                         className={styles.presetDeleteBtn}
-                        aria-label={`Delete ${p.name}`}
+                        aria-label={t('explore.deletePreset', { name: p.name })}
                         onClick={() => deletePreset(p.id)}
                       >
                         ✕

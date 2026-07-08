@@ -1,16 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { chatAboutMovie } from '../../../lib/gemini';
 import styles from './AIChatPanel.module.css';
 
-const SUGGESTIONS = [
-  'Is this suitable for family viewing?',
-  'What are the hidden themes in this film?',
-  'Explain the ending without spoilers',
-  'Who should watch this film?',
-  'What makes this film unique?',
-];
+const SUGGESTION_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5'];
 
 export default function AIChatPanel({ movie }) {
+  const { t } = useTranslation();
+  const SUGGESTIONS = SUGGESTION_KEYS.map((k) => t(`aiChat.suggestions.${k}`));
   const [messages, setMessages] = useState([]);
   const [input, setInput]       = useState('');
   const [loading, setLoading]   = useState(false);
@@ -41,7 +38,7 @@ export default function AIChatPanel({ movie }) {
       setMessages((prev) => [...prev, { role: 'ai', text: reply }]);
     } catch (err) {
       console.error(err);
-      setMessages((prev) => [...prev, { role: 'ai', text: 'Sorry, I encountered an error. Please try again.' }]);
+      setMessages((prev) => [...prev, { role: 'ai', text: t('aiChat.errorReply') }]);
     } finally {
       setLoading(false);
     }
@@ -53,7 +50,7 @@ export default function AIChatPanel({ movie }) {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path d="M12 2L13.09 8.26L19 9.27L15 14.14L16.18 21.02L12 17.77L7.82 21.02L9 14.14L5 9.27L10.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2"/>
         </svg>
-        Ask AI about this film
+        {t('aiChat.openBtn')}
       </button>
     );
   }
@@ -64,10 +61,10 @@ export default function AIChatPanel({ movie }) {
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.aiDot} />
-          <span className={styles.headerTitle}>AI Film Assistant</span>
-          <span className={styles.headerSub}>Powered by Gemini</span>
+          <span className={styles.headerTitle}>{t('aiChat.headerTitle')}</span>
+          <span className={styles.headerSub}>{t('aiChat.headerSub')}</span>
         </div>
-        <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>
+        <button className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label={t('aiChat.close')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
@@ -78,7 +75,7 @@ export default function AIChatPanel({ movie }) {
       <div className={styles.messages}>
         {messages.length === 0 && (
           <div className={styles.emptyState}>
-            <p className={styles.emptyTitle}>Ask anything about <strong>{movie.title}</strong></p>
+            <p className={styles.emptyTitle}>{t('aiChat.askAnything')} <strong>{movie.title}</strong></p>
             <div className={styles.suggestions}>
               {SUGGESTIONS.map((s) => (
                 <button key={s} className={styles.suggestion} onClick={() => sendMessage(s)}>
@@ -116,7 +113,7 @@ export default function AIChatPanel({ movie }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-          placeholder="Ask about this film... (max 200 chars)"
+          placeholder={t('aiChat.inputPlaceholder')}
           className={styles.input}
           disabled={loading}
         />
@@ -124,7 +121,7 @@ export default function AIChatPanel({ movie }) {
           className={styles.sendBtn}
           onClick={() => sendMessage()}
           disabled={!input.trim() || loading}
-          aria-label="Send"
+          aria-label={t('aiChat.send')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

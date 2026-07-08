@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ErrorState } from '../../../ui/StateViews/StateViews';
 import { DetailSkeleton } from '../../../ui/Skeleton/Skeleton';
 import { IMG } from '../../../../services/movieService';
@@ -18,7 +19,7 @@ import MovieActions from './MovieActions';
 import MovieCast from './MovieCast';
 
 export default function DetailMovie({ movie, trailerKey, credits, loading, error, onLoginRequired }) {
-  // 🛡️ SEMUA hook harus dipanggil di sini, di atas, SEBELUM early return apa pun.
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [listModalOpen, setListModalOpen] = useState(false);
   const [actionError, setActionError] = useState(null);
@@ -26,7 +27,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
   const { markAsWatched, hasWatched } = useWatchHistory();
 
   if (loading) return <div className="container"><DetailSkeleton /></div>;
-  if (error || !movie) return <ErrorState message={error || 'Movie not found.'} />;
+  if (error || !movie) return <ErrorState message={error || t('detailMovie.notFound')} />;
 
   const posterUrl = movie._localPoster || IMG.poster(movie.poster_path);
   const backdropUrl = IMG.backdrop(movie.backdrop_path);
@@ -51,7 +52,7 @@ export default function DetailMovie({ movie, trailerKey, credits, loading, error
       await action();
     } catch (err) {
       console.error('Action failed:', err);
-      setActionError('Something went wrong. Please try again.');
+      setActionError(t('detailMovie.actionError'));
     }
   };
 

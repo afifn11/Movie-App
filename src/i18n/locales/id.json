@@ -94,5 +94,144 @@
     "placeholder": "Tulis pendapat Anda tentang film ini... (maks 1000 karakter)",
     "loading": "Memuat review...",
     "noReviewsYet": "Belum ada review. Jadilah yang pertama!"
-   }
+   },
+   "filter": {
+    "sortBy": "Urutkan berdasarkan",
+    "mostPopular": "Paling Populer",
+    "highestRated": "Rating Tertinggi",
+    "newest": "Terbaru",
+    "oldest": "Terlama",
+    "highestRevenue": "Pendapatan Tertinggi",
+    "genres": "Genre",
+    "yearFrom": "Tahun dari",
+    "yearTo": "Tahun sampai",
+    "minRating": "Rating minimum:",
+    "any": "Bebas",
+    "maxRuntime": "Durasi maksimum",
+    "anyLength": "Durasi bebas",
+    "under90": "Di bawah 90 menit",
+    "under120": "Di bawah 2 jam",
+    "under150": "Di bawah 2,5 jam",
+    "clearAll": "Hapus semua filter"
+  },
+  "nlFilter": {
+    "label": "✨ Jelaskan suasana hati Anda",
+    "placeholder": "cth. \"film horor rating tinggi tahun 2020-an di bawah 2 jam\"",
+    "apply": "Terapkan",
+    "thinking": "Memproses...",
+    "errorDefault": "Tidak paham maksudnya. Coba tulis ulang."
+  },
+  "explore": {
+    "heading": "Jelajahi Film",
+    "subheading": "Temukan persis apa yang ingin Anda tonton.",
+    "savedFilters": "Filter Tersimpan",
+    "saveCurrent": "+ Simpan saat ini",
+    "presetNamePlaceholder": "Nama preset",
+    "save": "Simpan",
+    "noSavedFilters": "Belum ada filter tersimpan.",
+    "deletePreset": "Hapus {{name}}"
+  },
+  "leaderboard": {
+    "heading": "Kritikus Teratas",
+    "subheading": "Diurutkan berdasarkan total review yang ditulis di Netfif Cinema.",
+    "empty": "Belum ada review. Jadilah yang pertama naik ke papan peringkat!",
+    "review_one": "{{count}} review",
+    "review_other": "{{count}} review",
+    "streakDays": "🔥 streak {{count}} hari",
+    "badge_one": "🏅 {{count}} badge",
+    "badge_other": "🏅 {{count}} badge",
+    "anonymous": "Anonim",
+    "footerNote": "Ingin naik peringkat?",
+    "findMovie": "Cari film untuk direview"
+  },
+  "movieActions": {
+    "watchTrailer": "Tonton Trailer",
+    "inWatchlist": "Di Daftar Tonton",
+    "addToWatchlist": "Tambah ke Daftar Tonton",
+    "watched": "Sudah Ditonton",
+    "markAsWatched": "Tandai Sudah Ditonton",
+    "addToList": "Tambah ke Daftar"
+  },
+  "aiChat": {
+    "openBtn": "Tanya AI tentang film ini",
+    "headerTitle": "Asisten Film AI",
+    "headerSub": "Didukung Gemini",
+    "close": "Tutup",
+    "askAnything": "Tanyakan apa saja tentang",
+    "inputPlaceholder": "Tanya tentang film ini... (maks 200 karakter)",
+    "send": "Kirim",
+    "errorReply": "Maaf, terjadi kesalahan. Silakan coba lagi.",
+    "suggestions": {
+      "q1": "Apakah cocok ditonton bersama keluarga?",
+      "q2": "Apa tema tersembunyi dalam film ini?",
+      "q3": "Jelaskan endingnya tanpa spoiler",
+      "q4": "Siapa yang cocok menonton film ini?",
+      "q5": "Apa yang membuat film ini unik?"
+    }
+  },
+  "mood": {
+    "title": "Sedang ingin nonton apa?",
+    "subtitle": "Ceritakan perasaan Anda ke AI dan dapatkan pilihan film yang pas.",
+    "customPlaceholder": "Atau jelaskan suasana hati Anda sendiri... (maks 100 karakter)",
+    "timeAvailable": "Waktu tersedia:",
+    "finding": "Mencari film yang pas...",
+    "findBtn": "Cari Film Sesuai Mood",
+    "errorDefault": "Gagal mendapat rekomendasi. Silakan coba lagi.",
+    "resultsLabel": "AI memilihkan ini untuk Anda ✨",
+    "viewDetails": "Lihat Detail →",
+    "presets": {
+      "laugh": "😂 Ingin tertawa",
+      "emotional": "😢 Sedang emosional",
+      "adrenaline": "😤 Butuh adrenalin",
+      "think": "🤔 Ingin berpikir",
+      "romantic": "😍 Sedang romantis",
+      "scared": "😱 Ingin ketakutan",
+      "inspiration": "🌟 Butuh inspirasi",
+      "relax": "🧘 Ingin bersantai"
+    },
+    "time90to120": "90–120 menit",
+    "time2plus": "2+ jam"
+  },
+  "lists": {
+    "title": "Daftar Saya",
+    "subtitle": "Kurasi koleksi film Anda sendiri",
+    "newList": "Daftar Baru",
+    "loading": "Memuat daftar...",
+    "empty": "Belum ada daftar. Buat koleksi film pertama Anda!",
+    "public": "Publik",
+    "filmsCount_one": "{{count}} film",
+    "filmsCount_other": "{{count}} film",
+    "createModalTitle": "Buat Daftar Baru",
+    "listNameLabel": "Nama Daftar *",
+    "listNamePlaceholder": "cth. Sci-Fi Terbaik 2010-an",
+    "descLabel": "Deskripsi",
+    "descPlaceholder": "Daftar ini tentang apa?",
+    "makePublic": "Jadikan daftar ini publik",
+    "createBtn": "Buat Daftar",
+    "deleteTitle": "Hapus daftar"
+  },
+  "watchlist": {
+    "title": "Daftar Tonton Saya",
+    "signInMessage": "Masuk untuk menyimpan dan mengakses daftar tonton dari perangkat mana pun.",
+    "loading": "Memuat...",
+    "savedCount_one": "{{count}} film tersimpan",
+    "savedCount_other": "{{count}} film tersimpan",
+    "emptySubtitle": "Film yang Anda simpan akan muncul di sini",
+    "emptyMessage": "Belum ada film tersimpan. Klik ikon bookmark di film mana pun untuk menyimpannya.",
+    "browseMovies": "Jelajahi Film"
+  },
+  "listDetail": {
+    "notFound": "Daftar tidak ditemukan.",
+    "myLists": "Daftar Saya",
+    "filmsCount_one": "{{count}} film",
+    "filmsCount_other": "{{count}} film",
+    "byAuthor": "oleh {{name}}",
+    "unknown": "Tidak diketahui",
+    "empty": "Belum ada film di daftar ini. Jelajahi film dan tambahkan ke sini.",
+    "removeTitle": "Hapus dari daftar"
+  },
+  "detailMovie": {
+    "notFound": "Film tidak ditemukan.",
+    "actionError": "Terjadi kesalahan. Silakan coba lagi."
+  }
 }

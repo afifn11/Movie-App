@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { parseNaturalLanguageFilter } from '../../../lib/gemini';
 import styles from './NaturalLanguageFilter.module.css';
 
 export default function NaturalLanguageFilter({ onApply }) {
+  const { t } = useTranslation();
   const [text, setText]       = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
@@ -17,7 +19,7 @@ export default function NaturalLanguageFilter({ onApply }) {
       onApply(parsed);
     } catch (err) {
       console.error('Parse filter error:', err);
-      setError(err.message || 'Could not understand that. Try rephrasing.');
+      setError(err.message || t('nlFilter.errorDefault'));
     } finally {
       setLoading(false);
     }
@@ -25,20 +27,20 @@ export default function NaturalLanguageFilter({ onApply }) {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <label htmlFor="nlFilter" className={styles.label}>✨ Describe what you're in the mood for</label>
+      <label htmlFor="nlFilter" className={styles.label}>{t('nlFilter.label')}</label>
       <div className={styles.inputRow}>
         <input
           id="nlFilter"
           type="text"
           className={styles.input}
-          placeholder='e.g. "high-rated horror movies from the 2020s under 2 hours"'
+          placeholder={t('nlFilter.placeholder')}
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={loading}
           maxLength={200}
         />
         <button type="submit" className={styles.submitBtn} disabled={loading || !text.trim()}>
-          {loading ? 'Thinking...' : 'Apply'}
+          {loading ? t('nlFilter.thinking') : t('nlFilter.apply')}
         </button>
       </div>
       {error && <p className={styles.error}>{error}</p>}

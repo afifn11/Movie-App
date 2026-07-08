@@ -94,5 +94,145 @@
     "placeholder": "Write your thoughts about this film... (max 1000 chars)",
     "loading": "Loading reviews...",
     "noReviewsYet": "No reviews yet. Be the first!"
-   }
+   },
+
+   "filter": {
+    "sortBy": "Sort by",
+    "mostPopular": "Most Popular",
+    "highestRated": "Highest Rated",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "highestRevenue": "Highest Revenue",
+    "genres": "Genres",
+    "yearFrom": "Year from",
+    "yearTo": "Year to",
+    "minRating": "Minimum rating:",
+    "any": "Any",
+    "maxRuntime": "Max runtime",
+    "anyLength": "Any length",
+    "under90": "Under 90 min",
+    "under120": "Under 2 hours",
+    "under150": "Under 2.5 hours",
+    "clearAll": "Clear all filters"
+  },
+  "nlFilter": {
+    "label": "✨ Describe what you're in the mood for",
+    "placeholder": "e.g. \"high-rated horror movies from the 2020s under 2 hours\"",
+    "apply": "Apply",
+    "thinking": "Thinking...",
+    "errorDefault": "Could not understand that. Try rephrasing."
+  },
+  "explore": {
+    "heading": "Explore Movies",
+    "subheading": "Find exactly what you want to watch.",
+    "savedFilters": "Saved Filters",
+    "saveCurrent": "+ Save current",
+    "presetNamePlaceholder": "Preset name",
+    "save": "Save",
+    "noSavedFilters": "No saved filters yet.",
+    "deletePreset": "Delete {{name}}"
+  },
+  "leaderboard": {
+    "heading": "Top Critics",
+    "subheading": "Ranked by total reviews written on Netfif Cinema.",
+    "empty": "No reviews yet. Be the first to climb the leaderboard!",
+    "review_one": "{{count}} review",
+    "review_other": "{{count}} reviews",
+    "streakDays": "🔥 {{count}} day streak",
+    "badge_one": "🏅 {{count}} badge",
+    "badge_other": "🏅 {{count}} badges",
+    "anonymous": "Anonymous",
+    "footerNote": "Want to climb the ranks?",
+    "findMovie": "Find a movie to review"
+  },
+  "movieActions": {
+    "watchTrailer": "Watch Trailer",
+    "inWatchlist": "In Watchlist",
+    "addToWatchlist": "Add to Watchlist",
+    "watched": "Watched",
+    "markAsWatched": "Mark as Watched",
+    "addToList": "Add to List"
+  },
+  "aiChat": {
+    "openBtn": "Ask AI about this film",
+    "headerTitle": "AI Film Assistant",
+    "headerSub": "Powered by Gemini",
+    "close": "Close",
+    "askAnything": "Ask anything about",
+    "inputPlaceholder": "Ask about this film... (max 200 chars)",
+    "send": "Send",
+    "errorReply": "Sorry, I encountered an error. Please try again.",
+    "suggestions": {
+      "q1": "Is this suitable for family viewing?",
+      "q2": "What are the hidden themes in this film?",
+      "q3": "Explain the ending without spoilers",
+      "q4": "Who should watch this film?",
+      "q5": "What makes this film unique?"
+    }
+  },
+  "mood": {
+    "title": "What are you in the mood for?",
+    "subtitle": "Tell the AI how you're feeling and get perfect film picks.",
+    "customPlaceholder": "Or describe your mood in your own words... (max 100 chars)",
+    "timeAvailable": "Time available:",
+    "finding": "Finding perfect films...",
+    "findBtn": "Find Films for My Mood",
+    "errorDefault": "Could not get recommendations. Please try again.",
+    "resultsLabel": "AI picked these for you ✨",
+    "viewDetails": "View Details →",
+    "presets": {
+      "laugh": "😂 Need to laugh",
+      "emotional": "😢 Feeling emotional",
+      "adrenaline": "😤 Need adrenaline",
+      "think": "🤔 Want to think",
+      "romantic": "😍 Feeling romantic",
+      "scared": "😱 Want to be scared",
+      "inspiration": "🌟 Need inspiration",
+      "relax": "🧘 Want to relax"
+    },
+    "time90to120": "90–120 min",
+    "time2plus": "2+ hours"
+  },
+  "lists": {
+    "title": "My Lists",
+    "subtitle": "Curate your own film collections",
+    "newList": "New List",
+    "loading": "Loading lists...",
+    "empty": "No lists yet. Create your first film collection!",
+    "public": "Public",
+    "filmsCount_one": "{{count}} film",
+    "filmsCount_other": "{{count}} films",
+    "createModalTitle": "Create New List",
+    "listNameLabel": "List Name *",
+    "listNamePlaceholder": "e.g. Best Sci-Fi of the 2010s",
+    "descLabel": "Description",
+    "descPlaceholder": "What is this list about?",
+    "makePublic": "Make this list public",
+    "createBtn": "Create List",
+    "deleteTitle": "Delete list"
+  },
+  "watchlist": {
+    "title": "My Watchlist",
+    "signInMessage": "Sign in to save and access your watchlist from any device.",
+    "loading": "Loading...",
+    "savedCount_one": "{{count}} movie saved",
+    "savedCount_other": "{{count}} movies saved",
+    "emptySubtitle": "Your saved movies will appear here",
+    "emptyMessage": "No movies saved yet. Click the bookmark icon on any movie to save it.",
+    "browseMovies": "Browse Movies"
+  },
+  "listDetail": {
+    "notFound": "List not found.",
+    "myLists": "My Lists",
+    "filmsCount_one": "{{count}} film",
+    "filmsCount_other": "{{count}} films",
+    "byAuthor": "by {{name}}",
+    "unknown": "Unknown",
+    "empty": "No films in this list yet. Browse movies and add them here.",
+    "removeTitle": "Remove from list"
+  },
+  "detailMovie": {
+    "notFound": "Movie not found.",
+    "actionError": "Something went wrong. Please try again."
+  }
 }

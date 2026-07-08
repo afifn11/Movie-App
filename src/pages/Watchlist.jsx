@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWatchlistDB } from '../hooks/useWatchlistDB';
 import { useAuth } from '../context/AuthContext';
 import MovieGrid from '../components/features/movie/MovieGrid/MovieGrid';
@@ -8,6 +9,7 @@ import { Link } from 'react-router-dom';
 import styles from './Watchlist.module.css';
 
 export default function WatchlistPage() {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const { watchlist, loading } = useWatchlistDB();
   const [loginOpen, setLoginOpen] = useState(false);
@@ -27,11 +29,11 @@ export default function WatchlistPage() {
       <div className={styles.page}>
         <div className={`container ${styles.container}`}>
           <div className={styles.header}>
-            <h1 className={styles.title}><span className={styles.titleAccent}>/</span> My Watchlist</h1>
+            <h1 className={styles.title}><span className={styles.titleAccent}>/</span> {t('watchlist.title')}</h1>
           </div>
           <div className={styles.emptyWrap}>
             <EmptyState
-              message="Sign in to save and access your watchlist from any device."
+              message={t('watchlist.signInMessage')}
               icon={
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -39,7 +41,7 @@ export default function WatchlistPage() {
               }
             />
             <button className={styles.browseBtn} onClick={() => setLoginOpen(true)}>
-              Sign In with Google
+              {t('common.signInGoogle')}
             </button>
           </div>
         </div>
@@ -53,11 +55,11 @@ export default function WatchlistPage() {
       <div className={`container ${styles.container}`}>
         <div className={styles.header}>
           <div>
-            <h1 className={styles.title}><span className={styles.titleAccent}>/</span> My Watchlist</h1>
+            <h1 className={styles.title}><span className={styles.titleAccent}>/</span> {t('watchlist.title')}</h1>
             <p className={styles.subtitle}>
-              {loading ? 'Loading...' : movies.length > 0
-                ? `${movies.length} movie${movies.length > 1 ? 's' : ''} saved`
-                : 'Your saved movies will appear here'}
+              {loading ? t('watchlist.loading') : movies.length > 0
+                ? t('watchlist.savedCount', { count: movies.length })
+                : t('watchlist.emptySubtitle')}
             </p>
           </div>
         </div>
@@ -65,14 +67,14 @@ export default function WatchlistPage() {
         {!loading && movies.length === 0 ? (
           <div className={styles.emptyWrap}>
             <EmptyState
-              message="No movies saved yet. Click the bookmark icon on any movie to save it."
+              message={t('watchlist.emptyMessage')}
               icon={
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               }
             />
-            <Link to="/" className={styles.browseBtn}>Browse Movies</Link>
+            <Link to="/" className={styles.browseBtn}>{t('watchlist.browseMovies')}</Link>
           </div>
         ) : (
           <MovieGrid movies={movies} loading={loading} showGenreFilter />
