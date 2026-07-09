@@ -233,5 +233,10 @@
   "detailMovie": {
     "notFound": "Film tidak ditemukan.",
     "actionError": "Terjadi kesalahan. Silakan coba lagi."
+  },
+  "notifications": {
+    "title": "Notifikasi",
+    "markAllRead": "Tandai semua dibaca",
+    "empty": "Belum ada notifikasi."
   }
 }

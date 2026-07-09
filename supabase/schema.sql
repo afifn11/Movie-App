@@ -448,3 +448,90 @@ create index if not exists idx_user_badges_user   on public.user_badges(user_id)
 create index if not exists idx_review_votes_review on public.review_votes(review_id);
 create index if not exists idx_review_votes_user   on public.review_votes(user_id);
 create index if not exists idx_profiles_rank       on public.profiles(review_count desc);
+
+-- ============================================================
+-- FASE K Bagian 4: Notifikasi In-App
+-- ============================================================
+
+create table if not exists public.notifications (
+  id          bigserial primary key,
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  type        text not null,
+  title       text not null,
+  body        text,
+  link        text,
+  read        boolean not null default false,
+  created_at  timestamptz default now()
+);
+
+alter table public.notifications enable row level security;
+
+create policy "Users can view own notifications"
+  on public.notifications for select using (auth.uid() = user_id);
+
+create policy "Users can mark own notifications as read"
+  on public.notifications for update using (auth.uid() = user_id);
+
+create index if not exists idx_notifications_user on public.notifications(user_id, created_at desc);
+
+-- ─── Trigger: notifikasi saat badge baru didapat ─────────────
+
+create or replace function public.notify_badge_earned()
+returns trigger as $$
+declare
+  v_badge_name text;
+  v_badge_icon text;
+begin
+  select name, icon into v_badge_name, v_badge_icon
+    from public.badges where id = new.badge_id;
+
+  insert into public.notifications (user_id, type, title, body, link)
+  values (
+    new.user_id,
+    'badge_earned',
+    v_badge_icon || ' New Badge Earned!',
+    v_badge_name,
+    '/profile'
+  );
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_badge_earned on public.user_badges;
+create trigger on_badge_earned
+  after insert on public.user_badges
+  for each row execute procedure public.notify_badge_earned();
+
+-- ─── Trigger: notifikasi saat review di-vote "Helpful" ───────
+
+create or replace function public.notify_review_helpful()
+returns trigger as $$
+declare
+  v_review_owner uuid;
+  v_movie_title  text;
+  v_movie_id     bigint;
+begin
+  select user_id, movie_title, movie_id
+    into v_review_owner, v_movie_title, v_movie_id
+    from public.reviews where id = new.review_id;
+
+  if v_review_owner is distinct from new.user_id then
+    insert into public.notifications (user_id, type, title, body, link)
+    values (
+      v_review_owner,
+      'review_helpful',
+      '👍 Your review was helpful!',
+      'Someone marked your review of "' || v_movie_title || '" as helpful.',
+      '/movie/' || v_movie_id
+    );
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_review_voted on public.review_votes;
+create trigger on_review_voted
+  after insert on public.review_votes
+  for each row execute procedure public.notify_review_helpful();
