@@ -1,5 +1,6 @@
 import UserMenu from '../../features/auth/UserMenu';
 import LoginModal from '../../features/auth/LoginModal';
+import NotificationBell from '../../features/notifications/NotificationBell';
 import Avatar from '../../ui/Avatar/Avatar';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -85,6 +86,11 @@ export default function Navbar() {
               )}
             </Link>
 
+            {isAuthenticated && (
+              <div className={styles.desktopOnly}>
+                <NotificationBell />
+              </div>
+            )}
             <div className={styles.desktopOnly}>
               {isAuthenticated ? <UserMenu /> : (
                 <button className={styles.signInBtn} onClick={() => setLoginOpen(true)}>
@@ -147,6 +153,11 @@ export default function Navbar() {
               Watchlist
               {watchlist?.length > 0 && <span className={styles.quickActionBadge}>{watchlist.length}</span>}
             </Link>
+            {isAuthenticated && (
+              <div className={styles.mobileBellWrap}>
+                <NotificationBell />
+              </div>
+            )}
           </div>
 
           <p className={styles.mobileDrawerLabel}>Navigation</p>

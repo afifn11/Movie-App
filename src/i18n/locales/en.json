@@ -234,5 +234,10 @@
   "detailMovie": {
     "notFound": "Movie not found.",
     "actionError": "Something went wrong. Please try again."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet."
   }
 }
