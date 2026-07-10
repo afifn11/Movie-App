@@ -537,6 +537,54 @@ create trigger on_review_voted
   for each row execute procedure public.notify_review_helpful();
 
 -- ============================================================
+-- FASE J: Rate Limiting Persisten (menggantikan in-memory Map)
+-- ============================================================
+
+create table if not exists public.rate_limits (
+  user_id        uuid primary key references public.profiles(id) on delete cascade,
+  window_start   timestamptz not null default now(),
+  request_count  integer not null default 0
+);
+
+alter table public.rate_limits enable row level security;
+-- Sengaja TIDAK ada policy select/insert/update untuk client biasa —
+-- tabel ini cuma boleh diakses lewat RPC function security definer di bawah.
+
+create or replace function public.check_rate_limit(
+  p_user_id uuid,
+  p_max_requests integer,
+  p_window_seconds integer
+)
+returns boolean
+language plpgsql
+security definer
+as $$
+declare
+  v_window_start timestamptz;
+  v_count        integer;
+begin
+  select window_start, request_count into v_window_start, v_count
+    from public.rate_limits where user_id = p_user_id;
+
+  -- Window baru (belum pernah request, atau window lama sudah lewat)
+  if v_window_start is null or now() - v_window_start > (p_window_seconds || ' seconds')::interval then
+    insert into public.rate_limits (user_id, window_start, request_count)
+    values (p_user_id, now(), 1)
+    on conflict (user_id) do update set window_start = now(), request_count = 1;
+    return true;
+  end if;
+
+  -- Masih dalam window yang sama, sudah kena limit
+  if v_count >= p_max_requests then
+    return false;
+  end if;
+
+  update public.rate_limits set request_count = request_count + 1 where user_id = p_user_id;
+  return true;
+end;
+$$;
+
+-- ============================================================
 -- FASE J: Kunci kolom gamifikasi dari manipulasi langsung client
 -- ============================================================
 
