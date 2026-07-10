@@ -535,3 +535,26 @@ drop trigger if exists on_review_voted on public.review_votes;
 create trigger on_review_voted
   after insert on public.review_votes
   for each row execute procedure public.notify_review_helpful();
+
+-- ============================================================
+-- FASE J: Kunci kolom gamifikasi dari manipulasi langsung client
+-- ============================================================
+
+create or replace function public.protect_gamification_columns()
+returns trigger as $$
+begin
+  if pg_trigger_depth() <= 1 then
+    new.review_count     := old.review_count;
+    new.critic_rank      := old.critic_rank;
+    new.current_streak   := old.current_streak;
+    new.longest_streak   := old.longest_streak;
+    new.last_review_date := old.last_review_date;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists protect_gamification_stats on public.profiles;
+create trigger protect_gamification_stats
+  before update on public.profiles
+  for each row execute procedure public.protect_gamification_columns();
