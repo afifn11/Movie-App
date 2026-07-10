@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # Dependency npm (React, Vite, Supabase SDK, dll)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      # Gabungkan patch/minor update non-breaking jadi satu PR,
+      # supaya tidak banjir PR terpisah untuk tiap package kecil.
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    labels:
+      - "dependencies"
+
+  # GitHub Actions (versi actions/checkout, actions/setup-node, dll)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "ci"

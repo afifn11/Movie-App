@@ -21,8 +21,7 @@ const supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
   : null;
 
 // ─── Rate Limiter ─────────────────────────────────────────────────────────
-const rateLimitCache = new Map();
-const RATE_LIMIT_WINDOW_MS = 60000;
+
 const MAX_REQUESTS = 15;
 const GEMINI_TIMEOUT_MS = 25000;
 
@@ -83,22 +82,19 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 
-    const now = Date.now();
-    const userRateData = rateLimitCache.get(user.id) || { count: 0, startTime: now };
+    const { data: allowed, error: rateLimitError } = await supabase.rpc('check_rate_limit', {
+      p_user_id: user.id,
+      p_max_requests: MAX_REQUESTS,
+      p_window_seconds: 60,
+    });
 
-    if (now - userRateData.startTime > RATE_LIMIT_WINDOW_MS) {
-      userRateData.count = 1;
-      userRateData.startTime = now;
-    } else {
-      userRateData.count += 1;
-    }
-
-    rateLimitCache.set(user.id, userRateData);
-
-    if (userRateData.count > MAX_REQUESTS) {
+    if (rateLimitError) {
+      // Fail-open: kalau RPC gagal (misal DB hiccup sesaat), jangan blokir
+      // user yang sah — cukup log untuk investigasi, jangan bikin fitur AI down total.
+      console.error('[RATE LIMIT ERROR]', rateLimitError);
+    } else if (allowed === false) {
       return res.status(429).json({ error: 'Too Many Requests: Please slow down.' });
     }
-    // ───────────────────────────────────────────────────────────────────
 
     const { action, payload } = req.body || {};
     if (!action || !payload || typeof payload !== 'object') {
