@@ -69,56 +69,70 @@ A production-grade movie discovery platform built with React, Vite, Supabase, an
 - Content Security Policy headers on all routes
 
 ---
-
 ## Architecture
-src/
-├── i18n/                    # Translation setup and locale files (en, id)
-├── lib/                     # External service clients
-│   ├── supabase.js          # Supabase client
-│   ├── gemini.js            # Gemini AI client functions
-│   └── sentry.js            # Sentry init (lazy-loaded, production only)
-├── context/                 # React contexts
-│   ├── AuthContext.jsx      # Auth session, profile, watchlist
-│   └── MoviesContext.jsx    # Shared TMDB API cache
-├── hooks/                   # Custom hooks
-│   ├── useApiMovies.js      # Paginated TMDB lists
-│   ├── useMovieDetail.js    # Single movie + credits
-│   ├── useSearch.js         # Debounced search
-│   ├── useMovieFilters.js   # URL-persisted filter state
-│   ├── useDiscoverMovies.js # TMDB discover endpoint
-│   ├── useFilterPresets.js  # Saved filter presets
-│   ├── useWatchlistDB.js    # Supabase watchlist
-│   ├── useReviews.js        # Ratings, reviews, helpful votes
-│   ├── useMovieLists.js     # Custom lists
-│   ├── useWatchHistory.js   # Watch history
-│   ├── useUserBadges.js     # Earned badges
-│   ├── useLeaderboard.js    # Leaderboard data
-│   └── useNotifications.js  # Real-time notifications
-├── components/
-│   ├── layout/               # Navbar, Footer, AppLayout, ScrollToTop
-│   ├── ui/                   # Button, Modal, Skeleton, Avatar, CriticBadge, ErrorBoundary, StateViews
-│   └── features/
-│       ├── auth/              # LoginModal, UserMenu
-│       ├── movie/             # Hero, MovieCard, MovieGrid, DetailMovie, MovieActions
-│       ├── filter/             # FilterPanel, NaturalLanguageFilter
-│       ├── review/            # ReviewSection
-│       ├── ai/                # AIChatPanel, MoodPicker, AIRecommendations
-│       └── notifications/     # NotificationBell
-├── pages/                    # Route-level components
-│   ├── Home, Search, Explore, Leaderboard, Profile
-│   ├── Watchlist, Lists, ListDetail
-│   ├── Terms, Privacy, NotFound
-│   └── movie/                 # Popular, NowPlaying, TopRated
-└── services/
-└── movieService.js       # Centralized TMDB API layer
-api/                          # Vercel serverless functions
-├── gemini.js                 # AI endpoints (chat, review assist, mood, filter parsing)
-├── og.js                     # Dynamic Open Graph image generator (Node runtime)
-└── share-movie.js            # Bot-aware prerendered HTML with meta tags and JSON-LD
-e2e/                          # Playwright end-to-end tests
-src/**/*.test.jsx              # Vitest unit/component tests
 
----
+```text
+src/
+├── i18n/                          # Translation setup and locale files (en, id)
+├── lib/                           # External service clients
+│   ├── supabase.js                # Supabase client
+│   ├── gemini.js                  # Gemini AI client functions
+│   └── sentry.js                  # Sentry init (lazy-loaded, production only)
+├── context/                       # React contexts
+│   ├── AuthContext.jsx            # Auth session, profile, watchlist
+│   └── MoviesContext.jsx          # Shared TMDB API cache
+├── hooks/                         # Custom hooks
+│   ├── useApiMovies.js            # Paginated TMDB lists
+│   ├── useMovieDetail.js          # Single movie + credits
+│   ├── useSearch.js               # Debounced search
+│   ├── useMovieFilters.js         # URL-persisted filter state
+│   ├── useDiscoverMovies.js       # TMDB discover endpoint
+│   ├── useFilterPresets.js        # Saved filter presets
+│   ├── useWatchlistDB.js          # Supabase watchlist
+│   ├── useReviews.js              # Ratings, reviews, helpful votes
+│   ├── useMovieLists.js           # Custom lists
+│   ├── useWatchHistory.js         # Watch history
+│   ├── useUserBadges.js           # Earned badges
+│   ├── useLeaderboard.js          # Leaderboard data
+│   └── useNotifications.js        # Real-time notifications
+├── components/
+│   ├── layout/                    # Navbar, Footer, AppLayout, ScrollToTop
+│   ├── ui/                        # Button, Modal, Skeleton, Avatar, CriticBadge, ErrorBoundary, StateViews
+│   └── features/
+│       ├── auth/                  # LoginModal, UserMenu
+│       ├── movie/                 # Hero, MovieCard, MovieGrid, DetailMovie, MovieActions
+│       ├── filter/                # FilterPanel, NaturalLanguageFilter
+│       ├── review/                # ReviewSection
+│       ├── ai/                    # AIChatPanel, MoodPicker, AIRecommendations
+│       └── notifications/         # NotificationBell
+├── pages/                         # Route-level components
+│   ├── Home
+│   ├── Search
+│   ├── Explore
+│   ├── Leaderboard
+│   ├── Profile
+│   ├── Watchlist
+│   ├── Lists
+│   ├── ListDetail
+│   ├── Terms
+│   ├── Privacy
+│   ├── NotFound
+│   └── movie/
+│       ├── Popular
+│       ├── NowPlaying
+│       └── TopRated
+└── services/
+    └── movieService.js            # Centralized TMDB API layer
+
+api/                               # Vercel serverless functions
+├── gemini.js                      # AI endpoints (chat, review assist, mood, filter parsing)
+├── og.js                          # Dynamic Open Graph image generator (Node runtime)
+└── share-movie.js                 # Bot-aware prerendered HTML with meta tags and JSON-LD
+
+e2e/                               # Playwright end-to-end tests
+
+src/**/*.test.jsx                  # Vitest unit/component tests
+```
 
 ## Database Schema (Supabase / PostgreSQL)
 
