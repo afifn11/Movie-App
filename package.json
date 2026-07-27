@@ -13,20 +13,20 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@google/genai": "^2.11.0",
-    "@sentry/react": "^10.65.0",
-    "@supabase/supabase-js": "^2.110.2",
+    "@google/genai": "^2.13.0",
+    "@sentry/react": "^10.68.0",
+    "@supabase/supabase-js": "^2.110.9",
     "@vercel/og": "^0.11.1",
     "i18next": "^26.3.6",
     "i18next-browser-languagedetector": "^8.2.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-i18next": "^17.0.9",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-i18next": "^17.0.11",
     "react-router-dom": "^7.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "^1.62.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.17",
